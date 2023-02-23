@@ -30,7 +30,9 @@ function setStatusUpcoming() {
 
             // add a span with a textNode to this, either "delivered" or "not delivered"
             let content = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-status")[0];
+			let deadline = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
 
+            createTimeUntil(deadline[0]);
             createStatus(fileAmount, content);
         });
     });
@@ -51,6 +53,7 @@ function setStatusAll() {
                 .innerHTML.replace(" ", "").replace(/[^0-9]/g, '');
 
             let content = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-status");
+			let deadline = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
 
             // not all listings have a "devilry-cradmin-groupitemvalue-status" element.
             // any assignment that has been graded is considered a "devilry-cradmin-groupitemvalue-grade" element instead.
@@ -58,9 +61,58 @@ function setStatusAll() {
             // if content is 0, it means that no delivery status was found (likely because it's "grade" instead)
             if (content.length === 0 ) return;
 
+			createTimeUntil(deadline[0]);
             createStatus(fileAmount, content[0]);
         });
     });
+}
+
+// manipulates a <span> element.
+// adds text that says how much time is left until the deadline.
+// if deadline has passed, text will say "deadline has passed".
+function createTimeUntil(element) {
+    let currentTime = new Date();
+    let deadline = new Date(element.lastElementChild.textContent.trim());
+	
+    let intervalSeconds = deadline.getTime() / 1000 - currentTime.getTime() / 1000;
+    let intervalMinutes = intervalSeconds / 60;
+    let intervalHours = intervalMinutes / 60;
+    let intervalDays = intervalHours / 24;
+	
+    // if negative, don't truncate. If it is positive, truncate.
+    // this is because -0.9, should return -1, while 0.1 should return 0.
+    // -0.9 truncated is 0, not -1.
+    let sign = (Math.sign(intervalDays) === -1) ? Math.sign(intervalDays) : Math.sign(Math.trunc(intervalDays));
+    let text;
+
+    switch(sign) {
+        case 1:
+            if (deadline.getMonth() - currentTime.getMonth() >= 1) { text = `in ${deadline.getMonth() - currentTime.getMonth()} month${deadline.getMonth() - currentTime.getMonth() === 1 ? "s" : ""}`; break; } // months
+            if (intervalDays / 7 >= 1) { text = `in ${Math.trunc(intervalDays / 7)} week${Math.trunc(intervalDays / 7) >= 1 ? "s" : ""}`; break; } // weeks
+            if (intervalDays >= 1) { text = `in ${Math.trunc(intervalDays)} day${Math.trunc(intervalDays) >= 1 ? "s" : ""}`; break; } // days
+            break;
+        case 0:
+            if (intervalHours >= 1) { text = `in ${Math.trunc(intervalHours)} hour${Math.trunc(intervalHours) >= 1 ? "s" : ""}`; break; } // hours
+            if (intervalMinutes > 1) { text = `in ${Math.trunc(intervalMinutes)} minutes`; break; } // minutes
+            text = "in less than a minute";
+            break;
+        case -1:
+            text = "Deadline has passed";
+            break;
+        default:
+            text = "NaN";
+            break;
+    }
+
+
+    let timeUntil = document.createElement("span");
+    let strong = document.createElement("strong");
+
+    strong.appendChild(document.createTextNode(text));
+	
+    timeUntil.appendChild(strong);
+    element.appendChild(timeUntil);
+
 }
 
 // just made this function, so I don't have to repeat 10 lines of code.
