@@ -1,4 +1,4 @@
-# devilry-uio-qol-chrome-ext
+# devilry-uio-chrome-ext
 A simple chrome extension for https://devilry.ifi.uio.no/ that provides minor quality of life changes to the site.
 
 Current features:
