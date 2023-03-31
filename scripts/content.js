@@ -1,181 +1,236 @@
 /*
-- FYI this code is very sloppy.
+- DICLAIMER this code is very sloppy.
 
 - It's my first time writing in js and my first time writing a Chrome extension. I don't really know what I'm doing.
 
 - My only goal was to finish this extension as fast as possible, with practically no effort put into readability.
 */
 
-const DEBUG = true;
-const collectionUpcoming = document.getElementsByClassName("devilry-student-dashboard-upcoming-assignments");
-const collectionAll = document.getElementsByClassName("devilry-student-dashboard-all-assignments");
+/* TODO PLAN:
+    get options popup working
+    add dropdown for language and make sure it works with saving/restoring options
+    1.3: add night mode
+    ///
+    2. (am lazy rn) fix known bug: when switching filter, deadline status changes to "AAAAAA something went wrong"...
+    3. test that the PLURAL_MARKER and all the time related features are actually working (you can manually set the time of the currentTime object)
+ */
 
-// function that goes through every assignment in the "Upcoming assignments" dashboard and checks the status of them.
-// status being whether they are delivered or not.
-// if fileAmount is greater than 0, then assignment is delivered, else not delivered.
-function setStatusUpcoming() {
-    Array.from(collectionUpcoming).forEach(element => {
-        let listUpcoming = element.getElementsByTagName("ol")[0];
+const gradedAssignments = [];
 
-        // each children is a row in "Upcoming assignments"
-        // for each row, check status (either delivered or not delivered)
-        // and create new textNode and append it to the row
-        Array.from(listUpcoming.children).forEach(element => {
+// function that goes through every assignment ard and checks their delivery status.
+// if 'student files' (fileAmount) is greater than 0, then assignment is delivered, else not delivered.
+function setStatus() {
+    // "cradmin-legacy-listbuilder-itemframe" is the class that all the rows in the list of assignments use.
+    Array.from(document.getElementsByClassName("cradmin-legacy-listbuilder-itemframe")).forEach(element => {
+        let fileAmount = element.getElementsByClassName("devilry-core-comment-summary-studentfiles");
+        let content = element.getElementsByClassName("devilry-cradmin-groupitemvalue-status");
+        let deadline = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
 
-            // this massive block just gets the correct element, extracts the number of files from it and returns it as an int.
-            let fileAmount = element.firstElementChild.firstElementChild
-                .getElementsByClassName("devilry-cradmin-groupitemvalue-comments")[0]
-                .firstElementChild.getElementsByClassName("devilry-core-comment-summary-studentfiles")[0]
-                .innerHTML.replace(" ", "").replace(/[^0-9]/g, '');
+        // if length is 0, it means there is no delivery status. This happens when the assignment gets graded.
+        if (content.length === 0 ) {
+                gradedAssignments.push(content);
+                return;
+        }
 
-            // add a span with a textNode to this, either "delivered" or "not delivered"
-            let content = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-status")[0];
-			let deadline = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
-
-            createTimeUntil(deadline[0]);
-            createStatus(fileAmount, content);
-        });
+        if (DEADLINE_STATUS) createTimeUntil(deadline[0]);
+        if (DELIVERED_STATUS) createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
     });
 }
 
-// function that goes through every assignment in the "All assignments" dashboard and checks the status of them.
-function setStatusAll() {
-    Array.from(collectionAll).forEach(element => {
-        // list var is defined cause there's a ton of other elements before u finally get to the ordered list, unlike
-        // devilry-student-dashboard-upcoming-assignments, where the ordered list comes directly after.
-        // besides that, they should are the same, with one discrepancy (see below).
-        let list = element.firstElementChild.firstElementChild.lastElementChild.firstElementChild.getElementsByTagName("ol")[0].children;
-
-        Array.from(list).forEach(element => {
-            let fileAmount = element.firstElementChild.firstElementChild
-                .getElementsByClassName("devilry-cradmin-groupitemvalue-comments")[0]
-                .firstElementChild.getElementsByClassName("devilry-core-comment-summary-studentfiles")[0]
-                .innerHTML.replace(" ", "").replace(/[^0-9]/g, '');
-
-            let content = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-status");
-			let deadline = element.firstElementChild.firstElementChild.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
-
-            // not all listings have a "devilry-cradmin-groupitemvalue-status" element.
-            // any assignment that has been graded is considered a "devilry-cradmin-groupitemvalue-grade" element instead.
-            // the delivery status of those is irrelevent, so we just skip them completely.
-            // if content is 0, it means that no delivery status was found (likely because it's "grade" instead)
-            if (content.length === 0 ) return;
-
-			createTimeUntil(deadline[0]);
-            createStatus(fileAmount, content[0]);
-        });
-    });
-}
-
-// manipulates a <span> element.
 // adds text that says how much time is left until the deadline.
 // if deadline has passed, text will say "deadline has passed".
+// manipulates a <span> element.
 function createTimeUntil(element) {
+    let dateString = element.lastElementChild.textContent.trim();
     let currentTime = new Date();
-    let deadline = new Date(element.lastElementChild.textContent.trim());
-	
+    let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
+
+    // testing:
+    // currentTime.setTime(currentTime.getTime() + 60000 * 60 * 24 * 2);
+
     let intervalSeconds = deadline.getTime() / 1000 - currentTime.getTime() / 1000;
     let intervalMinutes = intervalSeconds / 60;
     let intervalHours = intervalMinutes / 60;
     let intervalDays = intervalHours / 24;
-	
-    // if negative, don't truncate. If it is positive, truncate.
-    // this is because -0.9, should return -1, while 0.1 should return 0.
-    // -0.9 truncated is 0, not -1.
+    let intervalWeeks = intervalDays / 7;
+    let intervalMonths = intervalWeeks / 4;
     let sign = (Math.sign(intervalDays) === -1) ? Math.sign(intervalDays) : Math.sign(Math.trunc(intervalDays));
-    let text;
+    let text = "AAAAAA something went wrong"; // keep this value for debugging purposes
+    let color = "black";
 
-    switch(sign) {
-        case 1:
-            if (deadline.getMonth() - currentTime.getMonth() >= 1) { text = `in ${deadline.getMonth() - currentTime.getMonth()} month${deadline.getMonth() - currentTime.getMonth() === 1 ? "s" : ""}`; break; } // months
-            if (intervalDays / 7 >= 1) { text = `in ${Math.trunc(intervalDays / 7)} week${Math.trunc(intervalDays / 7) >= 1 ? "s" : ""}`; break; } // weeks
-            if (intervalDays >= 1) { text = `in ${Math.trunc(intervalDays)} day${Math.trunc(intervalDays) >= 1 ? "s" : ""}`; break; } // days
+
+    switch(true) {
+        case (intervalMonths >= 1):
+            text = `${lang[IN_TIME]} ${Math.floor(intervalMonths)} ${lang[MONTH]}`; // adds "in x unit" (e.g. "in 5 hours")
+            text += (Math.floor(intervalMonths) > 1) ? lang[PLURAL_MARKER] : ""; // adds plural marker
             break;
-        case 0:
-            if (intervalHours >= 1) { text = `in ${Math.trunc(intervalHours)} hour${Math.trunc(intervalHours) >= 1 ? "s" : ""}`; break; } // hours
-            if (intervalMinutes > 1) { text = `in ${Math.trunc(intervalMinutes)} minutes`; break; } // minutes
+        case (intervalWeeks >= 1):
+            text = `${lang[IN_TIME]} ${Math.floor(intervalWeeks)} ${lang[WEEK]}`; // (no) lang[WEEK] = "uk"
+            text += (Math.floor(intervalWeeks) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE]; // lang[PLURAL_MARKER] = "er", lang[SINGLE_WEEK] = "e"
+            break;
+        case (intervalDays >= 1):
+            text = `${lang[IN_TIME]} ${Math.floor(intervalDays)} ${lang[DAY]}`;
+            text += (Math.floor(intervalDays) > 1) ? lang[PLURAL_MARKER] : "";
+            text += ` ${Math.round(intervalHours - Math.floor(intervalDays) * 24)} ${lang[HOUR]}`; // WARNING: this line is untested, but it SHOULD work. Could cause bugs tho
+            text += (Math.floor(intervalHours) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE];
+            break;
+        case (intervalHours >= 1):
+            /*let minutesLeft = intervalHours * 60 - Math.floor(intervalMinutes);
+            let additionalText = "";
+
+            if (minutesLeft <= 45) {
+                additionalText =
+            }
+            if (minutesLeft <= 30) {
+
+            }
+            if (minutesLeft <= 15) {
+
+            }*/
+
+            // e.g. if there is 2 hours and 50 minuters left, I want it to say 3 hours
+            // when it reaches the 45 minute mark, I want it to say both
+            // then when it reaches the 25 minute mark, I want it to say 2 hours, which it will keep saying until it reaches 45
+            // checkpoints: 45, 30, 15
+            text = `${lang[IN_TIME]} ${Math.floor(intervalHours)} ${lang[HOUR]}`;
+            text += (Math.floor(intervalHours) > 1) ? lang[PLURAL_MARKER] : "";
+            text += ` ${Math.round(intervalMinutes - Math.floor(intervalHours) * 60)} ${lang[MINUTE]}`;
+            text += (Math.floor(intervalMinutes) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE];
+            break;
+        case (intervalMinutes >= 1):
+            text = `${lang[IN_TIME]} ${Math.floor(intervalMinutes)} ${lang[MINUTE]}`;
+            text += (Math.floor(intervalMinutes) > 1) ? lang[PLURAL_MARKER] : "";
+            break;
+        case (intervalMinutes < 1 && intervalMinutes > 0):
             text = "in less than a minute";
             break;
-        case -1:
+        case (sign === -1):
             text = "Deadline has passed";
-            break;
-        default:
-            text = "NaN";
+            color = "Gray";
             break;
     }
 
 
-    let timeUntil = document.createElement("span");
-    let strong = document.createElement("strong");
+    let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
 
-    strong.appendChild(document.createTextNode(text));
-	
-    timeUntil.appendChild(strong);
-    element.appendChild(timeUntil);
+    if (textElementCollection.length === 0) {
+        let span = element.appendChild(document.createElement("span"));
+        let strong = span.appendChild(document.createElement("strong"))
+
+        strong.appendChild(document.createTextNode(text));
+        strong.style.color = color;
+
+        span.className = "devilry-extension-groupitemvalue-deadline-status";
+    } else {
+        textElementCollection[0].firstElementChild.innerHTML = text;
+        textElementCollection[0].firstElementChild.style.color = color;
+    }
 
 }
 
-// just made this function, so I don't have to repeat 10 lines of code.
 // The function just does actual manipulation of the DOM.
-// content is usually a <span> element.
+// element is usually a <span> element.
 // fileAmount is an int.
-function createStatus(fileAmount, content) {
+function createDeliveryStatus(element, fileAmount) {
     let text = (parseInt(fileAmount) > 0 ? "Delivered" : "Not delivered");
-    let color = (parseInt(fileAmount) > 0 ? "green" : "red");
-    let status = document.createElement("span");
-    let strong = document.createElement("strong"); // need this to make the text bold.
+    let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to  'OrangeRed'
 
-    strong.appendChild(document.createTextNode(text));
-    strong.style.color = color;
+    // looks for a delivery status (span). creates a new delivery status (span) if none found.
+    // if pre-existing span found, it will modify it instead of creating a new one.
+    let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-delivery-status");
 
-    status.appendChild(strong);
-    content.appendChild(status);
+    if (textElementCollection.length === 0) {
+        let span = element.appendChild(document.createElement("span"));
+        let strong = span.appendChild(document.createElement("strong"))
+
+        strong.appendChild(document.createTextNode(text));
+        strong.style.color = color;
+
+        span.className = "devilry-extension-groupitemvalue-delivery-status";
+    } else {
+        textElementCollection[0].firstElementChild.innerHTML = text;
+        textElementCollection[0].firstElementChild.style.color = color;
+    }
 }
 
 // this function is necessary to force the extension to "update", even when the page doesn't physically change.
 // (i.e. doing something on the page that updates the DOM of the page WITHOUT actually ever switching pages).
 // The extension's content script only reloads when you switch pages/reload the page.
-// so if you dynmically change some HTML element, the extension won't reload to account for it.
+// so if you dynamically change some HTML element, the extension won't reload to account for it.
 // the MutationObserver fixes that issue by alerting the extension of changes in the DOM,
 // so the extension can properly handle them.
-function initContentScript(callbackUpcoming, callbackAll) {
-    const options = { attributes: true, childList: true }; // subtree set to true is a BAD idea usually.
-    const observerUpcoming = new MutationObserver(callbackUpcoming);
-    const observerAll = new MutationObserver(callbackAll);
+function setObservers(callback) {
+    /* TODO
+        inject 'settings' hyperlink (use 48x48 logo as a placeholder for now)
+        node.createElement()
+    */
 
-    // this code only observes the FIRST element of each (all assignments, and upcoming)
-    // this is fine because they all change in unison, if the first one changed, they all changed and need to be updated with all() or upcoming()
-    // for some reason, the parent elements of the ordered lists is different between the different views of the same page
-    // and so the entire ordered list gets swapped out, which is outside the observers view.
+    // for some reason, the parent elements of the ordered lists are different between the different views of the same page.
+    // e.g. */filter, */filter/is_passing_grade-true, */filter/is_passing_grade-false etc.
+    // and so the entire ordered list gets swapped out with a new ordered list that is not viewed by the observer.
     // by observing the parents as well, the code should be able to detect when the entire ordered list gets swapped out as well.
-    let nodeUpcoming = Array.from(collectionUpcoming[0].children).pop();
-    let nodeAll = collectionAll[0].firstElementChild.firstElementChild.lastElementChild.firstElementChild.firstElementChild;
-    let nodeUpcomingParent = collectionUpcoming[0];
-    let nodeAllParent = collectionAll[0].firstElementChild.firstElementChild.lastElementChild.firstElementChild;
+    let assignmentsOrderedLists = document.getElementsByClassName("cradmin-legacy-listbuilder-rowlist");
+    let UpcomingListParent = document.getElementsByClassName("devilry-student-dashboard-upcoming-assignments")
+    let AllListParent = document.getElementById("cradmin_legacy_listbuilderview_listwrapper");
 
-    observerUpcoming.observe(nodeUpcoming, options); // observerUpcoming.observe(nodeUpcoming[0], options);
-    observerUpcoming.observe(nodeUpcomingParent, options);
+    const options = { attributes: true, childList: true };
+    const observer = new MutationObserver(callback);
 
-    observerAll.observe(nodeAll, options); // observerAll.observe(nodeAll[0], options);
-    observerAll.observe(nodeAllParent, options);
+    if (assignmentsOrderedLists.length === 0) return;
+    if (UpcomingListParent.length === 0) return;
+    if (AllListParent === null) return;
+
+    observer.observe(assignmentsOrderedLists[0], options);
+    observer.observe(assignmentsOrderedLists[1], options);
+    observer.observe(UpcomingListParent[0], options);
+    observer.observe(AllListParent, options);
 }
 
 // MutationObserver callback function
-function observerCallbackUpcoming(mutations) {
+function observerCallback(mutations) {
     if (DEBUG) mutations.forEach(mutation => {console.log(mutation)})
     if (window.location.href.startsWith("https://devilry.ifi.uio.no/devilry_student")) {
-        setStatusUpcoming();
+        setStatus();
     }
 }
 
-// MutationObserver callback function
-function observerCallbackAll(mutations) {
-    if (DEBUG) mutations.forEach(mutation => {console.log(mutation)})
-    if (window.location.href.startsWith("https://devilry.ifi.uio.no/devilry_student")) {
-        setStatusAll();
-    }
+function createOptionsIcon() {
+    let wrapper = document.createElement("div");
+    wrapper.style.height = "100%";
+    wrapper.style.display = "flexbox";
+    wrapper.style.alignContent = "center";
+
+    let input = document.createElement("input");
+    input.setAttribute("id", "devilry-extension-go-to-options");
+    input.setAttribute("type", "image");
+    input.setAttribute("title", "Extension options");
+    input.setAttribute("src", chrome.runtime.getURL("images/icon-48-settings.png"));
+    input.style.paddingRight = "10px";
+
+    let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
+    menu.insertBefore(input, menu.firstElementChild);
+
+    input.addEventListener("click", () => {
+        console.log("CLICK");
+        // TODO (maybe) create an iframe and put the options.html inside
+        // chrome.runtime.openOptionsPage();
+        chrome.runtime.sendMessage("showOptions");
+        /*if (chrome.runtime.openOptionsPage) {
+            console.log("chrome.runtime.openOptionsPage");
+            chrome.runtime.openOptionsPage();
+        } else {
+            console.log("else");
+            window.open(chrome.runtime.getURL('options.html'));
+        }*/
+    });
 }
 
-setStatusAll();
-setStatusUpcoming();
-initContentScript(observerCallbackUpcoming, observerCallbackAll);
+// entry point
+if(!ALL_OPTIONS_OFF) {
+    setObservers(observerCallback);
+    setLang();
+    setStatus();
+    createOptionsIcon();
+}
+
+// initContentScript(observerCallback);

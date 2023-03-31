@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <title>Devilry QoL extension</title>
+
+		<!-- Cascading Style Sheets -->
+		<link href="css/options.css" rel="stylesheet" media="screen">
+</head>
+<body style="background-color: #222222">
+    <div class="devilry-extension-options-wrapper">
+        <div class="devilry-extension-options-title-wrapper">
+            <span style="margin-right: 15px; font-size: 45px;">Devilry extension</span>
+            <span style="font-size: 20px;">v1.2.0</span>
+        </div>
+        <hr class="delivery-extension-rounded">
+        <div class="devilry-extension-options-tab-wrapper">
+            <button data-tab-name="devilry-extension-tab1" class="devilry-extension-options-tab-button devilry-extension-options-tab-button-active">Status</button>
+            <button data-tab-name="devilry-extension-tab2" class="devilry-extension-options-tab-button">Filter</button>
+            <button data-tab-name="devilry-extension-tab3" class="devilry-extension-options-tab-button">Misc</button>
+        </div>
+        <ol id="devilry-extension-tab1" class="devilry-extension-ol" style="list-style: none; margin-left: -20px;">
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-delivery" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Show delivery status</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-deadline" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Show deadline status</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+        </ol>
+        <ol id="devilry-extension-tab2" class="devilry-extension-ol" style="list-style: none; margin-left: -20px; display:none">
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-delivered" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Show delivered assignments</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-notdelivered" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Show not delivered assignments</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+        </ol>
+        <ol id="devilry-extension-tab3" class="devilry-extension-ol" style="list-style: none; margin-left: -20px; display:none">
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-lang" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Change language (drop down menu)</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-nightmode" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Enable night mode</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+            <li>
+                <div class="devilry-extension-options-option-wrapper">
+                    <div class="devilry-extension-options-option">
+                        <div class="devilry-extension-switch-wrapper">
+                            <label class="devilry-extension-switch">
+                                <input id="devilry-extension-op-debug" type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <span style="margin-left: 30px;">Enable debug options</span>
+                    </div>
+                    <span class="devilry-extension-options-desc">This setting changes settings to the settings</span>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/options.js"></script>
+    <script src="scripts/content.js"></script>
+    <script src="scripts/background.js"></script>
+
+</body>
+</html>
