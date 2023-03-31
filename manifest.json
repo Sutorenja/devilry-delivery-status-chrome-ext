@@ -1,21 +1,25 @@
 {
   "manifest_version": 3,
-  "name": "DEVELOPMENT VERSION Devilry delivery status",
-  "description": "Makes it abundantly clear whether or not you've turned in an assignment by clearly spelling it out using colored text.",
-  "version": "1.0",
+  "name": "Devilry delivery status",
+  "description": "A simple chrome extension for https://devilry.ifi.uio.no/ that provides minor quality of life changes to the site.",
+  "version": "1.2",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
-      "matches": [
-        "https://devilry.ifi.uio.no/devilry_student/*",
-        "https://devilry.ifi.uio.no/devilry_student/filter/*"
-      ]
+      "matches": ["https://devilry.ifi.uio.no/devilry_student/*"]
     }
-  ]
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
 }
