@@ -46,7 +46,7 @@ function createTimeUntil(element) {
     let currentTime = new Date();
     let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
     let interval = deadline.getTime() - currentTime.getTime();
-    let text = "Something went wrong"; // keep this value for debugging purposes
+    let text;
     let color = "black";
 
     if (isNegative(interval)) {
@@ -70,72 +70,6 @@ function createTimeUntil(element) {
         textElementCollection[0].firstElementChild.innerHTML = text;
         textElementCollection[0].firstElementChild.style.color = color;
     }
-
-    /*console.log("current time: " + currentTime)
-    console.log("deadline time: " + deadline)
-    console.log(interval)*/
-
-    // testing:
-    // currentTime.setTime(currentTime.getTime() + 60000 * 60 * 24 * 2);
-
-    /*let intervalSeconds = deadline.getTime() / 1000 - currentTime.getTime() / 1000;
-    let intervalMinutes = intervalSeconds / 60;
-    let intervalHours = intervalMinutes / 60;
-    let intervalDays = intervalHours / 24;
-    let intervalWeeks = intervalDays / 7;
-    let intervalMonths = intervalWeeks / 4;
-    let sign = (Math.sign(intervalDays) === -1) ? Math.sign(intervalDays) : Math.sign(Math.trunc(intervalDays));*/
-
-    /*switch(true) {
-        case (intervalMonths >= 1):
-            text = `${lang[IN_TIME]} ${Math.floor(intervalMonths)} ${lang[MONTH]}`; // adds "in x unit" (e.g. "in 5 hours")
-            text += (Math.floor(intervalMonths) > 1) ? lang[PLURAL_MARKER] : ""; // adds plural marker
-            break;
-        case (intervalWeeks >= 1):
-            text = `${lang[IN_TIME]} ${Math.floor(intervalWeeks)} ${lang[WEEK]}`; // (no) lang[WEEK] = "uk"
-            text += (Math.floor(intervalWeeks) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE]; // lang[PLURAL_MARKER] = "er", lang[SINGLE_WEEK] = "e"
-            break;
-        case (intervalDays >= 1):
-            text = `${lang[IN_TIME]} ${Math.floor(intervalDays)} ${lang[DAY]}`;
-            text += (Math.floor(intervalDays) > 1) ? lang[PLURAL_MARKER] : "";
-            text += ` ${Math.round(intervalHours - Math.floor(intervalDays) * 24)} ${lang[HOUR]}`; // WARNING: this line is untested, but it SHOULD work. Could cause bugs tho
-            text += (Math.floor(intervalHours) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE];
-            break;
-        case (intervalHours >= 1):
-            let minutesLeft = intervalHours * 60 - Math.floor(intervalMinutes);
-            let additionalText = "";
-
-            if (minutesLeft <= 45) {
-                additionalText =
-            }
-            if (minutesLeft <= 30) {
-
-            }
-            if (minutesLeft <= 15) {
-
-            }
-
-            // e.g. if there is 2 hours and 50 minuters left, I want it to say 3 hours
-            // when it reaches the 45 minute mark, I want it to say both
-            // then when it reaches the 25 minute mark, I want it to say 2 hours, which it will keep saying until it reaches 45
-            // checkpoints: 45, 30, 15
-            text = `${lang[IN_TIME]} ${Math.floor(intervalHours)} ${lang[HOUR]}`;
-            text += (Math.floor(intervalHours) > 1) ? lang[PLURAL_MARKER] : "";
-            text += ` ${Math.round(intervalMinutes - Math.floor(intervalHours) * 60)} ${lang[MINUTE]}`;
-            text += (Math.floor(intervalMinutes) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE];
-            break;
-        case (intervalMinutes >= 1):
-            text = `${lang[IN_TIME]} ${Math.floor(intervalMinutes)} ${lang[MINUTE]}`;
-            text += (Math.floor(intervalMinutes) > 1) ? lang[PLURAL_MARKER] : "";
-            break;
-        case (intervalMinutes < 1 && intervalMinutes > 0):
-            text = "in less than a minute";
-            break;
-        case (sign === -1):
-            text = "Deadline has passed";
-            color = "Gray";
-            break;
-    }*/
 }
 
 // The function just does the actual manipulation of the DOM.

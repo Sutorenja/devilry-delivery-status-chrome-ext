@@ -1,25 +1,6 @@
 // Module for date related utils
 
 function getMillis(interval, unit) {
-
-    /*interval *= 4;
-    if (unit === "week") return interval;
-
-    interval *= 7;
-    if (unit === "day") return interval;
-
-    interval *= 24;
-    if (unit === "hour") return interval;
-
-    interval *= 60;
-    if (unit === "minute") return interval;
-
-    interval *= 60;
-    if (unit === "second") return interval;
-
-    interval *= 60;
-    if (unit === "m") return interval;*/
-
     switch (unit) {
         case "month": return interval * 4 * 7 * 24 * 60 * 60 * 1000;
         case "week": return interval * 7 * 24 * 60 * 60 * 1000;
@@ -57,8 +38,6 @@ function getMonths(msInterval) {
 
 function isNegative(msInterval) {
     return msInterval < 0;
-    /*if (msInterval > 0) return false;
-    return true;*/
 }
 
 /*
@@ -105,68 +84,5 @@ function getDateString(msInterval) {
     addToString("second", getSeconds);
     if (count === 2) return string.substring(0, string.length - 4);
 
-    /*
-    addToString("month", getMonths);
-    console.log(string, interval)
-    console.log(getMonths(msInterval))
-
-    addToString("week", getWeeks);
-    console.log(string, interval)
-    console.log(getWeeks(msInterval))
-    if (count === 2) return string.replace;
-
-    addToString("day", getDays);
-    console.log(string, interval)
-    console.log(getDays(msInterval))
-    if (count === 2) return string;
-
-    addToString("hour", getHours);
-    console.log(string, interval)
-    console.log(getHours(msInterval))
-    if (count === 2) return string;
-
-    addToString("minute", getMinutes);
-    console.log(string, interval)
-    console.log(getMinutes(msInterval))
-    if (count === 2) return string;
-
-    addToString("second", getSeconds);
-    console.log(string, interval)
-    console.log(getSeconds(msInterval))
-    if (count === 2) return string;
-     */
-
     return string;
-
-    /*let months = getMonths(msInterval);
-    if (months >= 1) {
-        let floored = Math.floor(months); // getMonths (and other funcs) return floats
-        msInterval -= floored;
-        count++;
-
-        string += floored + " month";
-        if (floored > 1) string += "s";
-    }
-
-    let weeks = getWeeks(msInterval);
-    if (weeks >= 1) {
-        let floored = Math.floor(weeks);
-        msInterval -= floored;
-        count++;
-
-        string += floored + " week";
-        if (floored > 1) string += "s";
-    }
-
-    let days = getDays(msInterval);
-    if (days >= 1) {
-        let floored = Math.floor(days);
-        msInterval -= floored;
-        count++;
-
-        string += floored + " week";
-        if (floored > 1) string += "s";
-    }
-
-    if (count === 2) return string;*/
 }
