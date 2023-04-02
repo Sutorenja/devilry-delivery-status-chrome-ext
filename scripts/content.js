@@ -17,7 +17,7 @@
 
 const gradedAssignments = [];
 
-// function that goes through every assignment ard and checks their delivery status.
+// function that goes through every assignment and checks their delivery status.
 // if 'student files' (fileAmount) is greater than 0, then assignment is delivered, else not delivered.
 function setStatus() {
     // "cradmin-legacy-listbuilder-itemframe" is the class that all the rows in the list of assignments use.
@@ -26,10 +26,11 @@ function setStatus() {
         let content = element.getElementsByClassName("devilry-cradmin-groupitemvalue-status");
         let deadline = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
 
-        // if length is 0, it means there is no delivery status. This happens when the assignment gets graded.
+        // if length is 0, it means there is no delivery status. This happens when the assignment gets graded
+        // (where the deilvry status gets replaced with a grade).
         if (content.length === 0 ) {
-                gradedAssignments.push(content);
-                return;
+            gradedAssignments.push(content);
+            return;
         }
 
         if (DEADLINE_STATUS) createTimeUntil(deadline[0]);
@@ -44,22 +45,48 @@ function createTimeUntil(element) {
     let dateString = element.lastElementChild.textContent.trim();
     let currentTime = new Date();
     let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
+    let interval = deadline.getTime() - currentTime.getTime();
+    let text = "Something went wrong"; // keep this value for debugging purposes
+    let color = "black";
+
+    if (isNegative(interval)) {
+        text = "Deadline has passed";
+        color = "Gray";
+    } else {
+        text = getDateString(interval);
+    }
+
+    let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
+
+    if (textElementCollection.length === 0) {
+        let span = element.appendChild(document.createElement("span"));
+        let strong = span.appendChild(document.createElement("strong"))
+
+        strong.appendChild(document.createTextNode(text));
+        strong.style.color = color;
+
+        span.className = "devilry-extension-groupitemvalue-deadline-status";
+    } else {
+        textElementCollection[0].firstElementChild.innerHTML = text;
+        textElementCollection[0].firstElementChild.style.color = color;
+    }
+
+    /*console.log("current time: " + currentTime)
+    console.log("deadline time: " + deadline)
+    console.log(interval)*/
 
     // testing:
     // currentTime.setTime(currentTime.getTime() + 60000 * 60 * 24 * 2);
 
-    let intervalSeconds = deadline.getTime() / 1000 - currentTime.getTime() / 1000;
+    /*let intervalSeconds = deadline.getTime() / 1000 - currentTime.getTime() / 1000;
     let intervalMinutes = intervalSeconds / 60;
     let intervalHours = intervalMinutes / 60;
     let intervalDays = intervalHours / 24;
     let intervalWeeks = intervalDays / 7;
     let intervalMonths = intervalWeeks / 4;
-    let sign = (Math.sign(intervalDays) === -1) ? Math.sign(intervalDays) : Math.sign(Math.trunc(intervalDays));
-    let text = "AAAAAA something went wrong"; // keep this value for debugging purposes
-    let color = "black";
+    let sign = (Math.sign(intervalDays) === -1) ? Math.sign(intervalDays) : Math.sign(Math.trunc(intervalDays));*/
 
-
-    switch(true) {
+    /*switch(true) {
         case (intervalMonths >= 1):
             text = `${lang[IN_TIME]} ${Math.floor(intervalMonths)} ${lang[MONTH]}`; // adds "in x unit" (e.g. "in 5 hours")
             text += (Math.floor(intervalMonths) > 1) ? lang[PLURAL_MARKER] : ""; // adds plural marker
@@ -75,7 +102,7 @@ function createTimeUntil(element) {
             text += (Math.floor(intervalHours) > 1) ? lang[PLURAL_MARKER] : lang[SINGLE];
             break;
         case (intervalHours >= 1):
-            /*let minutesLeft = intervalHours * 60 - Math.floor(intervalMinutes);
+            let minutesLeft = intervalHours * 60 - Math.floor(intervalMinutes);
             let additionalText = "";
 
             if (minutesLeft <= 45) {
@@ -86,7 +113,7 @@ function createTimeUntil(element) {
             }
             if (minutesLeft <= 15) {
 
-            }*/
+            }
 
             // e.g. if there is 2 hours and 50 minuters left, I want it to say 3 hours
             // when it reaches the 45 minute mark, I want it to say both
@@ -108,27 +135,10 @@ function createTimeUntil(element) {
             text = "Deadline has passed";
             color = "Gray";
             break;
-    }
-
-
-    let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
-
-    if (textElementCollection.length === 0) {
-        let span = element.appendChild(document.createElement("span"));
-        let strong = span.appendChild(document.createElement("strong"))
-
-        strong.appendChild(document.createTextNode(text));
-        strong.style.color = color;
-
-        span.className = "devilry-extension-groupitemvalue-deadline-status";
-    } else {
-        textElementCollection[0].firstElementChild.innerHTML = text;
-        textElementCollection[0].firstElementChild.style.color = color;
-    }
-
+    }*/
 }
 
-// The function just does actual manipulation of the DOM.
+// The function just does the actual manipulation of the DOM.
 // element is usually a <span> element.
 // fileAmount is an int.
 function createDeliveryStatus(element, fileAmount) {
@@ -180,10 +190,16 @@ function setObservers(callback) {
     if (UpcomingListParent.length === 0) return;
     if (AllListParent === null) return;
 
-    observer.observe(assignmentsOrderedLists[0], options);
-    observer.observe(assignmentsOrderedLists[1], options);
-    observer.observe(UpcomingListParent[0], options);
-    observer.observe(AllListParent, options);
+    // if one of the assignment dashboards are empty
+    // if you don't have any upcoming assignments, the oredered list with the assignments will not be created
+    // and assignmentsOrderedLists[1] will be 'undefined'.
+    // likewise, if you don't have any assignments at all assignmentsOrderedLists[0], will be 'undefined'.
+    if (typeof assignmentsOrderedLists[0] !== "undefined") observer.observe(assignmentsOrderedLists[0], options);
+    if (typeof assignmentsOrderedLists[1] !== "undefined") observer.observe(assignmentsOrderedLists[1], options);
+    if (typeof UpcomingListParent[0] !== "undefined") observer.observe(UpcomingListParent[0], options);
+    if (typeof AllListParent !== "undefined") observer.observe(AllListParent, options);
+    /*observer.observe(UpcomingListParent[0], options);
+    observer.observe(AllListParent, options);*/
 }
 
 // MutationObserver callback function

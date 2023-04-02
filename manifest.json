@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "DEVELOPMENT VERSION Devilry delivery status",
+  "name": "(DEV) Devilry delivery status",
   "description": "A simple chrome extension for https://devilry.ifi.uio.no/ that provides minor quality of life changes to the site.",
   "version": "1.2.0",
   "icons": {
@@ -15,10 +15,14 @@
   "content_scripts": [
     {
       "js": [
+        "scripts/date.js",
         "scripts/options.js",
         "scripts/lang.js",
         "scripts/content.js",
         "scripts/nightmode.js"
+      ],
+      "css": [
+        "css/options.css"
       ],
       "matches": [
         "https://devilry.ifi.uio.no/*"
