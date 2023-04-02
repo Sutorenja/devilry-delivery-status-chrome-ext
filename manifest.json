@@ -19,7 +19,7 @@
         "scripts/options.js",
         "scripts/lang.js",
         "scripts/content.js",
-        "scripts/nightmode.js"
+        "scripts/darkmode.js"
       ],
       "css": [
         "css/options.css"
@@ -43,6 +43,10 @@
     },
     {
       "resources": ["options.html"],
+      "matches": ["https://devilry.ifi.uio.no/*"]
+    },
+    {
+      "resources": ["en_lang.csv", "no_lang.csv"],
       "matches": ["https://devilry.ifi.uio.no/*"]
     }
   ]

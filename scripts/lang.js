@@ -1,7 +1,7 @@
 // language related utils
 
 //constants
-const PLURAL_MARKER = "PLURAL";
+/*const PLURAL_MARKER = "PLURAL";
 const SINGLE = "SINGLE"; // Norwegian words that end in "e" only add "r" when in plural, not "er", hence the need for this additional constant.
 const IN_TIME = "IN_TIME";
 const AND = "AND";
@@ -46,4 +46,34 @@ function setLang() {
             lang[MINUTE] = "minutt";
             break;
     }
+}*/
+
+const ENGLISH = "en";
+const NORWEGIAN = "no";
+
+const STATUS_TRUE = "delivered";
+const STATUS_FALSE = "not.delivered";
+const DEADLINE_PASSED = "deadline.passed";
+const AND = "and";
+const WHEN = "when";
+const MONTH = "month";
+const MONTHS = "month.plural";
+const WEEK = "week";
+const WEEKS = "week.plural";
+const DAY = "day";
+const DAYS = "day.plural";
+const HOUR = "hour";
+const HOURS = "hour.plural";
+const MINUTE = "minute";
+const MINUTES = "minute.plural";
+const SECOND = "second";
+const SECONDS = "second.plural";
+
+function loadLanguageFiles() {
+
 }
+
+function setLanguage(lang) {
+
+}
+

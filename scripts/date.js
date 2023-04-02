@@ -57,7 +57,6 @@ function getDateString(msInterval) {
             let floored = Math.floor(time); // getMonths (and other funcs) return floats
             interval -= getMillis(floored, unit);
             count++;
-            console.log(unit, count)
 
             string += floored + " " + unit;
             if (floored > 1) string += "s ";

@@ -1,0 +1,7 @@
+function enableDark() {
+
+}
+
+function disableDark() {
+
+}

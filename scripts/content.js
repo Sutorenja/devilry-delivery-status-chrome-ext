@@ -28,13 +28,13 @@ function setStatus() {
 
         // if length is 0, it means there is no delivery status. This happens when the assignment gets graded
         // (where the deilvry status gets replaced with a grade).
-        if (content.length === 0 ) {
+        if (content.length === 0) {
             gradedAssignments.push(content);
             return;
         }
 
-        if (DEADLINE_STATUS) createTimeUntil(deadline[0]);
-        if (DELIVERED_STATUS) createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
+       createTimeUntil(deadline[0]);
+       createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
     });
 }
 
@@ -42,18 +42,19 @@ function setStatus() {
 // if deadline has passed, text will say "deadline has passed".
 // manipulates a <span> element.
 function createTimeUntil(element) {
-    let dateString = element.lastElementChild.textContent.trim();
+    // let dateString = element.lastElementChild.textContent.trim();
+    let dateString = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline__datetime")[0].textContent.trim();
     let currentTime = new Date();
     let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
     let interval = deadline.getTime() - currentTime.getTime();
-    let text;
     let color = "black";
+    let text;
 
     if (isNegative(interval)) {
         text = "Deadline has passed";
         color = "Gray";
     } else {
-        text = getDateString(interval);
+        text = "due in " + getDateString(interval);
     }
 
     let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
@@ -77,7 +78,7 @@ function createTimeUntil(element) {
 // fileAmount is an int.
 function createDeliveryStatus(element, fileAmount) {
     let text = (parseInt(fileAmount) > 0 ? "Delivered" : "Not delivered");
-    let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to  'OrangeRed'
+    let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to 'OrangeRed'
 
     // looks for a delivery status (span). creates a new delivery status (span) if none found.
     // if pre-existing span found, it will modify it instead of creating a new one.
@@ -138,33 +139,104 @@ function setObservers(callback) {
 
 // MutationObserver callback function
 function observerCallback(mutations) {
-    if (DEBUG) mutations.forEach(mutation => {console.log(mutation)})
+    // if (DEBUG) mutations.forEach(mutation => console.log(mutation))
     if (window.location.href.startsWith("https://devilry.ifi.uio.no/devilry_student")) {
         setStatus();
     }
 }
 
-function createOptionsIcon() {
+function createOptionIcons() {
     let wrapper = document.createElement("div");
     wrapper.style.height = "100%";
     wrapper.style.display = "flexbox";
+    wrapper.style.flexDirection = "column";
     wrapper.style.alignContent = "center";
+    // wrapper.style.justifyContent = "center";
 
-    let input = document.createElement("input");
+    // TODO align it in the center
+
+    /*let input = document.createElement("input");
     input.setAttribute("id", "devilry-extension-go-to-options");
     input.setAttribute("type", "image");
     input.setAttribute("title", "Extension options");
     input.setAttribute("src", chrome.runtime.getURL("images/icon-48-settings.png"));
-    input.style.paddingRight = "10px";
+    input.style.paddingRight = "10px";*/
+
+    const createOption = lang => {
+        let option = document.createElement("option");
+        option.setAttribute("value", lang);
+        option.innerHTML = lang.toUpperCase();
+
+        // if (lang === "en") option.setAttribute("default", "true");
+
+        return option;
+    }
+
+    let darkmodeCheckbox = document.createElement("input");
+    darkmodeCheckbox.setAttribute("id", "devilry-extension-option-darkmode");
+    darkmodeCheckbox.setAttribute("title", "Toggle darkmode");
+    darkmodeCheckbox.setAttribute("class", "devilry-extension-checkbox"); // TODO generic css for all dropdown goes in ".devilry-extension-checkbox" and specific css for dark mode goes in "#devilry-extension-option-darkmode"
+    darkmodeCheckbox.type = "checkbox";
+    // darkmodeCheckbox.style.paddingRight = "10px";
+
+    let langDropdown = document.createElement("select");
+    langDropdown.setAttribute("id", "devilry-extension-option-language");
+    langDropdown.setAttribute("title", "Change extension language"); // TODO same as darkmode (generic/specific css)
+    langDropdown.setAttribute("name", "language");
+    langDropdown.setAttribute("class", "devilry-extension-dropdown");
+    langDropdown.appendChild(createOption(NORWEGIAN));
+    langDropdown.appendChild(createOption(ENGLISH));
+    // langDropdown.style.paddingRight = "10px";
 
     let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
-    menu.insertBefore(input, menu.firstElementChild);
 
-    input.addEventListener("click", () => {
-        console.log("CLICK");
-        // TODO (maybe) create an iframe and put the options.html inside
+    /*wrapper.appendChild(darkmodeCheckbox);
+    wrapper.appendChild(langDropdown);
+    menu.insertBefore(wrapper, menu.firstElementChild);*/
+    menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
+    menu.insertBefore(langDropdown, menu.firstElementChild);
+
+    const callback = evt => {
+        switch(evt.currentTarget.id) {
+            case "devilry-extension-option-darkmode":
+                console.log("Darkmode: " + evt.currentTarget.checked);
+                enableDark();
+                break;
+            case "devilry-extension-option-language":
+                console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
+                setLanguage(evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
+                break;
+        }
+
+        save_options();
+        setStatus(); // reload extension
+    }
+
+    darkmodeCheckbox.addEventListener("change", callback);
+    langDropdown.addEventListener("change", callback);
+
+    /*darkmodeCheckbox.addEventListener("change", () => {
+        if (darkmodeCheckbox.checked) console.log("darkmode: on");
+        else console.log("darkmode: off");
+
+        save_options();
+        setStatus(); // reload extension
+    });
+
+    langDropdown.addEventListener("change", (evt) => {
+        console.log("language switched to: " + langDropdown.item(langDropdown.selectedIndex).value);
+
+        save_options();
+        setStatus(); // reload extension
+    });*/
+
+    // menu.insertBefore(input, menu.firstElementChild);
+
+    // input.addEventListener("click", () => {
+        // console.log("CLICK");
+        // T0D0 (maybe) create an iframe and put the options.html inside
         // chrome.runtime.openOptionsPage();
-        chrome.runtime.sendMessage("showOptions");
+        // chrome.runtime.sendMessage("showOptions");
         /*if (chrome.runtime.openOptionsPage) {
             console.log("chrome.runtime.openOptionsPage");
             chrome.runtime.openOptionsPage();
@@ -172,15 +244,20 @@ function createOptionsIcon() {
             console.log("else");
             window.open(chrome.runtime.getURL('options.html'));
         }*/
-    });
+    // });
+
 }
 
 // entry point
-if(!ALL_OPTIONS_OFF) {
+setObservers(observerCallback);
+setStatus();
+createOptionIcons();
+
+/*if(!ALL_OPTIONS_OFF) {
     setObservers(observerCallback);
-    setLang();
+    // setLang();
     setStatus();
-    createOptionsIcon();
-}
+    createOptionIcons();
+}*/
 
 // initContentScript(observerCallback);

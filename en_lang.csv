@@ -1,0 +1,17 @@
+delivered,Delivered
+not.delivered,Not delivered
+deadline.passed,Deadline has passed
+and,and
+when,due in
+month,month
+month.plural,months
+week,week
+week.plural,weeks
+day,day
+day.plural,days
+hour,hour
+hour.plural,hours
+minute,minute
+minute.plural,minutes
+second,second
+second.plural,seconds

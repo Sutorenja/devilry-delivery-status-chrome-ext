@@ -1,36 +1,77 @@
 // options
 
-let DELIVERED_STATUS = true;
+/*let DELIVERED_STATUS = true;
 let DEADLINE_STATUS = true;
 let ALL_OPTIONS_OFF = false;
 let USER_LANG = "en";
 let NIGHT_MODE = false;
-let DEBUG = true;
+let DEBUG = true;*/
 
 /* TODO
     changing DELIVERED_STATUS or TIME_UNTIL_STATUS should cause the program to run setStatus() again,
     so that user can see the changes instantly without having to reload the page.
  */
 
-function setInternalOptionVariables(...args) {
+/*function setInternalOptionVariables(...args) {
     DEBUG = args[0];
     DELIVERED_STATUS = args[1];
     DEADLINE_STATUS = args[2];
     ALL_OPTIONS_OFF = args[3];
     USER_LANG = args[4];
     NIGHT_MODE = args[5];
-}
+}*/
 
 function save_options() {
-    document.getElementById("devilry-extension-op-delivery")
+    /*document.getElementById("devilry-extension-op-delivery")
     document.getElementById("devilry-extension-op-deadline")
     document.getElementById("devilry-extension-op-delivered")
     document.getElementById("devilry-extension-op-notdelivered")
     document.getElementById("devilry-extension-op-lang").value // TODO add lang dropdown menu
     document.getElementById("devilry-extension-op-nightmode")
-    document.getElementById("devilry-extension-op-debug")
+    document.getElementById("devilry-extension-op-debug")*/
+
+    let darkmode = document.getElementById("devilry-extension-option-darkmode");
+    let language = document.getElementById("devilry-extension-option-language");
 
     chrome.storage.sync.set({
+        darkmode: darkmode.checked,
+        language: language.item(language.selectedIndex).value
+    }, () => {
+        console.log("Updated settings.");
+    })
+
+    /*function() { // update status to let user know options were saved
+        if (DEBUG) console.log("Saved settings.");
+
+        let updateStatus = false;
+        let updateLang = false;
+
+        // if old state is different to the updated state, redraw all the status messages (time until delivery, delivery status)
+        if (DELIVERED_STATUS !== document.getElementById("devilry-extension-op-delivery").checked) {
+            updateStatus = true;
+        }
+        if (DEADLINE_STATUS !== document.getElementById("devilry-extension-op-deadline").checked) {
+            updateStatus = true;
+        }
+        // if (USER_LANG !== document.getElementById("devilry-extension-op-lang").value) {
+        //     updateLang = true;
+        // }
+
+        setInternalOptionVariables();
+
+        if (updateStatus) {
+            setStatus();
+        }
+        if (updateLang) {
+            setLang();
+        }
+
+        // T0DO this should return all of the
+        console.log(document.querySelectorAll("input[class^=devilry-extension-op-]"));
+        // setInternalOptionVariables(document.querySelectorAll("input[class^=devilry-extension-op-]"))
+    }*/
+
+    /*chrome.storage.sync.set({
         showDeliveryStatus: document.getElementById("devilry-extension-op-delivery").checked,
         showDeadlineStatus: document.getElementById("devilry-extension-op-deadline").checked,
         showDelivered: document.getElementById("devilry-extension-op-delivered").checked,
@@ -51,9 +92,9 @@ function save_options() {
         if (DEADLINE_STATUS !== document.getElementById("devilry-extension-op-deadline").checked) {
             updateStatus = true;
         }
-        /*if (USER_LANG !== document.getElementById("devilry-extension-op-lang").value) {
-            updateLang = true;
-        }*/
+        // if (USER_LANG !== document.getElementById("devilry-extension-op-lang").value) {
+        //     updateLang = true;
+        // }
 
         setInternalOptionVariables();
 
@@ -64,14 +105,29 @@ function save_options() {
             setLang();
         }
 
-        // TODO this should return all of the
+        // T0DO this should return all of the
         console.log(document.querySelectorAll("input[class^=devilry-extension-op-]"));
         // setInternalOptionVariables(document.querySelectorAll("input[class^=devilry-extension-op-]"))
-    });
+    });*/
 }
 
 function restore_options() {
     chrome.storage.sync.get({
+        darkmode: false,
+        language: "en"
+    }, items => {
+        let darkmode = document.getElementById("devilry-extension-option-darkmode");
+        let language = document.getElementById("devilry-extension-option-language");
+
+        darkmode.checked = items.darkmode;
+
+        Array.from(language.children).forEach(e => {
+            if (e.value === items.language) {
+                e.setAttribute("selected", "selected");
+            }
+        })
+    })
+    /*chrome.storage.sync.get({
         showDeliveryStatus: true,
         showDeadlineStatus: true,
         showDelivered: true,
@@ -96,14 +152,14 @@ function restore_options() {
             items.nightmode,
             items.showDebugOptions
         );
-    });
+    });*/
 }
 
 document.addEventListener('DOMContentLoaded', restore_options);
 
 // adds event listener to every button in the settings navigation menu.
 // shows/hides different <ol> based on which button the user presses.
-for (let element of document.getElementsByClassName("devilry-extension-options-tab-button")) {
+/*for (let element of document.getElementsByClassName("devilry-extension-options-tab-button")) {
 
     element.addEventListener('click', evt => {
 
@@ -119,11 +175,11 @@ for (let element of document.getElementsByClassName("devilry-extension-options-t
         document.getElementById(evt.currentTarget.getAttribute("data-tab-name")).style.display = "block";
         evt.currentTarget.className += " devilry-extension-options-tab-button-active";
     });
-}
+}*/
 
 // adds event listener to the toggle buttons for all the options.
-for (let element of document.querySelectorAll(".devilry-extension-switch input")) {
+/*for (let element of document.querySelectorAll(".devilry-extension-switch input")) {
     element.addEventListener("change", evt => {
         save_options();
     });
-}
+}*/
