@@ -111,10 +111,32 @@ function save_options() {
     });*/
 }
 
-function restore_options() {
-    chrome.storage.sync.get({
+async function restoreOptions() {
+    console.log("restoring options"); // TODO remove
+
+    await chrome.storage.sync.get({ darkmode: false, language: ENGLISH })
+        .then(
+            items => {
+                let darkmode = document.getElementById("devilry-extension-option-darkmode");
+                let language = document.getElementById("devilry-extension-option-language");
+
+                darkmode.checked = items.darkmode;
+
+                Array.from(language.children).forEach(e => {
+                    if (e.value === items.language) {
+                        e.setAttribute("selected", "selected");
+                    }
+                });
+
+                setLanguage(items.language);
+                console.log("current options: ", items); // TODO remove
+            },
+            () => console.log("Error restoring extension options.")
+        );
+    console.log("options restored") // TODO remove
+    /*await chrome.storage.sync.get({
         darkmode: false,
-        language: "en"
+        language: ENGLISH
     }, items => {
         let darkmode = document.getElementById("devilry-extension-option-darkmode");
         let language = document.getElementById("devilry-extension-option-language");
@@ -125,8 +147,15 @@ function restore_options() {
             if (e.value === items.language) {
                 e.setAttribute("selected", "selected");
             }
-        })
-    })
+        });
+
+        setLanguage(items.language);
+        console.log("Options ACTUALLY restored (this should happen before \"options restored\"");
+        // setStatus();
+        // if (items.language !== ENGLISH) setStatus(); // reloads extension to reflect users preferred / stored language option. English is the default option,
+
+        console.log("current options: ", items)
+    });*/
     /*chrome.storage.sync.get({
         showDeliveryStatus: true,
         showDeadlineStatus: true,
@@ -148,14 +177,14 @@ function restore_options() {
         setInternalOptionVariables(
             items.showDeliveryStatus,
             items.showDeadlineStatus,
-            "en", // TODO REPLACE after ddropdown is finished
+            "en", // TODO REPLACE after dropdown is finished
             items.nightmode,
             items.showDebugOptions
         );
     });*/
 }
 
-document.addEventListener('DOMContentLoaded', restore_options);
+// document.addEventListener('DOMContentLoaded', restore_options);
 
 // adds event listener to every button in the settings navigation menu.
 // shows/hides different <ol> based on which button the user presses.

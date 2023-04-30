@@ -6,20 +6,13 @@
 - My only goal was to finish this extension as fast as possible, with practically no effort put into readability.
 */
 
-/* TODO PLAN:
-    get options popup working
-    add dropdown for language and make sure it works with saving/restoring options
-    1.3: add night mode
-    ///
-    2. (am lazy rn) fix known bug: when switching filter, deadline status changes to "AAAAAA something went wrong"...
-    3. test that the PLURAL_MARKER and all the time related features are actually working (you can manually set the time of the currentTime object)
- */
-
 const gradedAssignments = [];
 
 // function that goes through every assignment and checks their delivery status.
 // if 'student files' (fileAmount) is greater than 0, then assignment is delivered, else not delivered.
 function setStatus() {
+    console.log("setting status") // TODO remove
+
     // "cradmin-legacy-listbuilder-itemframe" is the class that all the rows in the list of assignments use.
     Array.from(document.getElementsByClassName("cradmin-legacy-listbuilder-itemframe")).forEach(element => {
         let fileAmount = element.getElementsByClassName("devilry-core-comment-summary-studentfiles");
@@ -36,6 +29,8 @@ function setStatus() {
        createTimeUntil(deadline[0]);
        createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
     });
+
+    console.log("status set") // TODO remove
 }
 
 // adds text that says how much time is left until the deadline.
@@ -51,11 +46,18 @@ function createTimeUntil(element) {
     let text;
 
     if (isNegative(interval)) {
+        text = currentLanguage[DEADLINE_PASSED];
+        color = "Gray";
+    } else {
+        text = currentLanguage[WHEN] + " " + getTranslatableDateString(interval);
+    }
+
+    /*if (isNegative(interval)) {
         text = "Deadline has passed";
         color = "Gray";
     } else {
         text = "due in " + getDateString(interval);
-    }
+    }*/
 
     let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
 
@@ -77,8 +79,11 @@ function createTimeUntil(element) {
 // element is usually a <span> element.
 // fileAmount is an int.
 function createDeliveryStatus(element, fileAmount) {
-    let text = (parseInt(fileAmount) > 0 ? "Delivered" : "Not delivered");
+    let text = (parseInt(fileAmount) > 0 ? currentLanguage[DELIVERED_TRUE] : currentLanguage[DELIVERED_FALSE]);
     let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to 'OrangeRed'
+
+    /*let text = (parseInt(fileAmount) > 0 ? "Delivered" : "Not delivered");
+    let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red");*/
 
     // looks for a delivery status (span). creates a new delivery status (span) if none found.
     // if pre-existing span found, it will modify it instead of creating a new one.
@@ -165,7 +170,7 @@ function createOptionIcons() {
     const createOption = lang => {
         let option = document.createElement("option");
         option.setAttribute("value", lang);
-        option.innerHTML = lang.toUpperCase();
+        option.innerHTML = lang.split("_")[0].toUpperCase();
 
         // if (lang === "en") option.setAttribute("default", "true");
 
@@ -249,9 +254,68 @@ function createOptionIcons() {
 }
 
 // entry point
-setObservers(observerCallback);
-setStatus();
-createOptionIcons();
+
+/*async function asyncSetStatus() {
+    return new Promise((resolve, reject) => {
+        setStatus();
+        resolve();
+    })
+}*/
+
+const init = async () => {
+    /*loadLanguageFiles().then(() => {
+        console.log("calls restore_options()")
+        restoreOptions(); // calls setLanguage()
+        console.log("calls setStatus()")
+        setStatus();
+    });*/
+    // loadLanguageFiles().then(restore_options); // calls setLanguage() and setStatus()
+    // loadLanguageFiles().then(restoreOptions).then(setStatus);
+    // loadLanguageFiles().then(() => console.log("A"))
+    // restoreOptions();
+
+    // loadLanguageFiles().then(() => restoreOptions()).then(() => console.log("A"))
+    // console.log(loadLanguageFiles().then(() => console.log("A")).then())
+
+    // loadLanguageFiles().then(() => getLanguageOption()).then(() => setStatus());
+    // loadLanguageFiles().then(() => restoreOptions())//.then(() => asyncSetStatus());
+
+    /*loadLanguageFiles().then(() => new Promise(restoreOptions))
+        .then(() => new Promise(setStatus));*/
+
+    /*loadLanguageFiles().then(() => new Promise(() => {console.log(1)}))
+        .then(() => new Promise(function(resolve, reject) {resolve();}))
+        .then(() => console.log(3));*/
+
+    /*loadLanguageFiles().then(() => new Promise(() => console.log("success1")), () => {console.log("failure1")})
+        // .then(() => new Promise(() => console.log("success")), () => {console.log("failure")})
+        .then(() => () => console.log("success2"), () => {console.log("failure2")})*/
+    // console.log(loadLanguageFiles().then(() => new Promise(() => console.log("success1")), () => {console.log("failure1")}))
+
+    // loadLanguageFiles -> restoreOptions ->setStatus
+    // setStatus();
+    createOptionIcons();
+    await loadLanguageFiles();
+    // console.log("awaited 1")
+    await restoreOptions()
+    // console.log("awaited 2")
+    // await setStatus();
+    await setObservers(observerCallback);
+    await setStatus();
+    // console.log("awaited 3")
+    // console.log("end of init")
+    // console.log("SetStatus() next")
+}
+
+
+/*const asyncStuff = async () => {
+    await loadLanguageFiles();
+    await restoreOptions();
+    await setStatus();
+}*/
+
+// init().then(setStatus);
+init().then();
 
 /*if(!ALL_OPTIONS_OFF) {
     setObservers(observerCallback);

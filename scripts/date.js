@@ -2,12 +2,12 @@
 
 function getMillis(interval, unit) {
     switch (unit) {
-        case "month": return interval * 4 * 7 * 24 * 60 * 60 * 1000;
-        case "week": return interval * 7 * 24 * 60 * 60 * 1000;
-        case "day": return interval * 24 * 60 * 60 * 1000;
-        case "hour": return interval * 60 * 60 * 1000;
-        case "minute": return interval * 60 * 1000;
-        case "second": return interval * 1000;
+        case MONTH: return interval * 4 * 7 * 24 * 60 * 60 * 1000;
+        case WEEK: return interval * 7 * 24 * 60 * 60 * 1000;
+        case DAY: return interval * 24 * 60 * 60 * 1000;
+        case HOUR: return interval * 60 * 60 * 1000;
+        case MINUTE: return interval * 60 * 1000;
+        case SECOND: return interval * 1000;
     }
     return interval;
 }
@@ -51,12 +51,16 @@ function getDateString(msInterval) {
     let count = 0;
     let interval = msInterval;
 
+    // const addToString(measurement, pluralMeasurement, func)
     const addToString = (unit, func) => {
         let time = func(interval);
         if (time >= 1) {
             let floored = Math.floor(time); // getMonths (and other funcs) return floats
             interval -= getMillis(floored, unit);
             count++;
+
+            // lang[MONTH] -> "month"
+            // lang[measurement] -> "month"
 
             string += floored + " " + unit;
             if (floored > 1) string += "s ";
@@ -82,6 +86,96 @@ function getDateString(msInterval) {
 
     addToString("second", getSeconds);
     if (count === 2) return string.substring(0, string.length - 4);
+
+    if (count === 1) return string.substring(0, string.length - 4);
+
+    return string;
+}
+
+// getDateString() that supports localization
+/*function getTranslatableDateString(msInterval) { // TODO REMOVE THIS (func has been replaced)
+    let string = "";
+    let count = 0;
+    let interval = msInterval;
+
+    const addToString = (measurement, pluralMeasurement, func) => {
+        let time = func(interval);
+        if (time >= 1) {
+            let floored = Math.floor(time); // getMonths (and other funcs) return floats
+            interval -= getMillis(floored, measurement);
+            count++;
+
+            string += floored + " " + measurement;
+            if (floored > 1) string += pluralMeasurement + " ";
+            else string += " ";
+
+            string += currentLanguage[AND] + " ";
+        }
+    };
+
+    console.log("current lang: " + currentLanguage)
+
+    addToString(currentLanguage[MONTH], currentLanguage[MONTHS], getMonths);
+    // TODO language support: addToString(MONTH, MONTHS, getMonths);
+
+    addToString(currentLanguage[WEEK], currentLanguage[WEEKS], getWeeks);
+    if (count === 2) return string.substring(0, string.length - 4); // removes "and " from the end of the string
+
+    addToString(currentLanguage[DAY], currentLanguage[DAYS], getDays);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToString(currentLanguage[HOUR], currentLanguage[HOURS], getHours);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToString(currentLanguage[MINUTE], currentLanguage[MINUTES], getMinutes);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToString(currentLanguage[SECOND], currentLanguage[SECONDS], getSeconds);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    if (count === 1) return string.substring(0, string.length - 4);
+
+    return string;
+}*/
+
+// getDateString() that supports localization
+function getTranslatableDateString(msInterval) {
+    let string = "";
+    let count = 0;
+    let interval = msInterval;
+
+    const addToStringTranslatable = (unit, pluralUnit, func) => {
+        let time = func(interval);
+        if (time >= 1) {
+            let floored = Math.floor(time); // getMonths (and other funcs) return floats
+            interval -= getMillis(floored, unit);
+            count++;
+
+            string += floored + " ";
+            if (floored > 1) string += currentLanguage[pluralUnit];
+            else string += currentLanguage[unit]
+            string += " " + currentLanguage[AND] + " ";
+        }
+    };
+
+    addToStringTranslatable(MONTH, MONTHS, getMonths);
+
+    addToStringTranslatable(WEEK, WEEKS, getWeeks);
+    if (count === 2) return string.substring(0, string.length - 4); // removes "and " from the end of the string
+
+    addToStringTranslatable(DAY, DAYS, getDays);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToStringTranslatable(HOUR, HOURS, getHours);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToStringTranslatable(MINUTE, MINUTES, getMinutes);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    addToStringTranslatable(SECOND, SECONDS, getSeconds);
+    if (count === 2) return string.substring(0, string.length - 4);
+
+    if (count === 1) return string.substring(0, string.length - 4);
 
     return string;
 }
