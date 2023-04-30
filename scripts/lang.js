@@ -1,56 +1,10 @@
 // language related utils
 
-//constants
-/*const PLURAL_MARKER = "PLURAL";
-const SINGLE = "SINGLE"; // Norwegian words that end in "e" only add "r" when in plural, not "er", hence the need for this additional constant.
-const IN_TIME = "IN_TIME";
-const AND = "AND";
-const MONTH = "MONTH";
-const WEEK = "WEEK";
-const DAY = "DAY";
-const HOUR = "HOUR";
-const MINUTE = "MINUTE";
-
-let lang = {};
-
-function setLang() {
-    // basic usage:
-    // input: (lang[IN_TIME]) (number) (lang[MONTH])(lang[PLURAL_MARKER])
-    // output: in 1 month
-
-    // week-specific usage:
-    // input: (lang[IN_TIME]) (number) (lang[SINGLE_WEEK])(lang[WEEK])(lang[PLURAL_MARKER])
-    // output: in 5 weeks
-
-    switch(USER_LANG) {
-        case "en":
-            lang[PLURAL_MARKER] = "s";
-            lang[SINGLE] = "";
-            lang[IN_TIME] = "due in";
-            lang[AND] = "and";
-            lang[MONTH] = "month";
-            lang[WEEK] = "week";
-            lang[DAY] = "day";
-            lang[HOUR] = "hour";
-            lang[MINUTE] = "minute";
-            break;
-        case "no":
-            lang[PLURAL_MARKER] = "er";
-            lang[SINGLE] = "e";
-            lang[IN_TIME] = "forfaller om";
-            lang[AND] = "og";
-            lang[MONTH] = "måned";
-            lang[WEEK] = "uk"; // incredibly scuffed buuuut SINGLE adds the "e".
-            lang[DAY] = "dag";
-            lang[HOUR] = "tim";
-            lang[MINUTE] = "minutt";
-            break;
-    }
-}*/
-
+// language constants:
 const ENGLISH = "en_lang.csv";
 const NORWEGIAN = "no_lang.csv";
 
+// translation IDs / word constants:
 const DELIVERED_TRUE = "delivered";
 const DELIVERED_FALSE = "not.delivered";
 const DEADLINE_PASSED = "deadline.passed";
@@ -93,20 +47,9 @@ async function loadLanguageFiles() {
         });
 
         return languageDict
-
-        /*, () => { // TODO REMOVE
-            return languageDict
-        });*/
-        // ;console.log(languageDict)
-        /*Promise.all([promise]).then(() => {
-            return languageDict
-        });
-
-        console.log("languageDict")*/
     }
 
     const read = async filename => {
-        // console.log(filename, filename.split("/").pop()) // TODO remove
         await fetch(filename).then(
             data => languages[filename.split("/").pop()] = build(data),
             () => console.log("Error fetching data from: " + filename));
@@ -115,28 +58,8 @@ async function loadLanguageFiles() {
     await read(EN_file);
     await read(NO_file);
     setLanguage(ENGLISH);
-    // console.log("language files loaded") // TODO remove
-    // console.log("curr-lang:" + languages["en_lang.csv"]) // TODO remove
-    // console.log("curr-lang:" + currentLanguage) // TODO remove
 }
 
 function setLanguage(lang) {
-    // console.log("setting current language to: " + lang); // TODO remove
-    // console.log(languages[0], languages[0] === ENGLISH)
     currentLanguage = languages[lang];
-    console.log("language has been set to: " + lang) // TODO remove
-    /* TODO
-        there are some issues with race conditions here.
-        setStatus() gets called TWICE before the current language has been updated even once somehow
-        might want to attach a callback or something that calls setStats() idk
-        it doesnt make sense at all
-        its so fucking annoying
-     */
 }
-
-/*function loadLanguagePromise() { // TODO remove
-    return new Promise((resolve, reject) => {
-        loadLanguageFiles();
-    }, () => {})
-    }
-}*/

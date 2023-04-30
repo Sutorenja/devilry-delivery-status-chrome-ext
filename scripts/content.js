@@ -11,8 +11,6 @@ const gradedAssignments = [];
 // function that goes through every assignment and checks their delivery status.
 // if 'student files' (fileAmount) is greater than 0, then assignment is delivered, else not delivered.
 function setStatus() {
-    console.log("setting status") // TODO remove
-
     // "cradmin-legacy-listbuilder-itemframe" is the class that all the rows in the list of assignments use.
     Array.from(document.getElementsByClassName("cradmin-legacy-listbuilder-itemframe")).forEach(element => {
         let fileAmount = element.getElementsByClassName("devilry-core-comment-summary-studentfiles");
@@ -20,7 +18,7 @@ function setStatus() {
         let deadline = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline");
 
         // if length is 0, it means there is no delivery status. This happens when the assignment gets graded
-        // (where the deilvry status gets replaced with a grade).
+        // (where the delivery status gets replaced with a grade).
         if (content.length === 0) {
             gradedAssignments.push(content);
             return;
@@ -29,15 +27,12 @@ function setStatus() {
        createTimeUntil(deadline[0]);
        createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
     });
-
-    console.log("status set") // TODO remove
 }
 
 // adds text that says how much time is left until the deadline.
 // if deadline has passed, text will say "deadline has passed".
 // manipulates a <span> element.
 function createTimeUntil(element) {
-    // let dateString = element.lastElementChild.textContent.trim();
     let dateString = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline__datetime")[0].textContent.trim();
     let currentTime = new Date();
     let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
@@ -48,22 +43,13 @@ function createTimeUntil(element) {
     if (isNegative(interval)) {
         text = currentLanguage[DEADLINE_PASSED];
         color = "Gray";
-    } else {
-        text = currentLanguage[WHEN] + " " + getTranslatableDateString(interval);
-    }
-
-    /*if (isNegative(interval)) {
-        text = "Deadline has passed";
-        color = "Gray";
-    } else {
-        text = "due in " + getDateString(interval);
-    }*/
+    } else text = currentLanguage[WHEN] + " " + getTranslatableDateString(interval);
 
     let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
 
     if (textElementCollection.length === 0) {
         let span = element.appendChild(document.createElement("span"));
-        let strong = span.appendChild(document.createElement("strong"))
+        let strong = span.appendChild(document.createElement("strong"));
 
         strong.appendChild(document.createTextNode(text));
         strong.style.color = color;
@@ -81,9 +67,6 @@ function createTimeUntil(element) {
 function createDeliveryStatus(element, fileAmount) {
     let text = (parseInt(fileAmount) > 0 ? currentLanguage[DELIVERED_TRUE] : currentLanguage[DELIVERED_FALSE]);
     let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to 'OrangeRed'
-
-    /*let text = (parseInt(fileAmount) > 0 ? "Delivered" : "Not delivered");
-    let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red");*/
 
     // looks for a delivery status (span). creates a new delivery status (span) if none found.
     // if pre-existing span found, it will modify it instead of creating a new one.
@@ -110,11 +93,6 @@ function createDeliveryStatus(element, fileAmount) {
 // the MutationObserver fixes that issue by alerting the extension of changes in the DOM,
 // so the extension can properly handle them.
 function setObservers(callback) {
-    /* TODO
-        inject 'settings' hyperlink (use 48x48 logo as a placeholder for now)
-        node.createElement()
-    */
-
     // for some reason, the parent elements of the ordered lists are different between the different views of the same page.
     // e.g. */filter, */filter/is_passing_grade-true, */filter/is_passing_grade-false etc.
     // and so the entire ordered list gets swapped out with a new ordered list that is not viewed by the observer.
@@ -160,13 +138,6 @@ function createOptionIcons() {
 
     // TODO align it in the center
 
-    /*let input = document.createElement("input");
-    input.setAttribute("id", "devilry-extension-go-to-options");
-    input.setAttribute("type", "image");
-    input.setAttribute("title", "Extension options");
-    input.setAttribute("src", chrome.runtime.getURL("images/icon-48-settings.png"));
-    input.style.paddingRight = "10px";*/
-
     const createOption = lang => {
         let option = document.createElement("option");
         option.setAttribute("value", lang);
@@ -195,9 +166,6 @@ function createOptionIcons() {
 
     let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
 
-    /*wrapper.appendChild(darkmodeCheckbox);
-    wrapper.appendChild(langDropdown);
-    menu.insertBefore(wrapper, menu.firstElementChild);*/
     menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
     menu.insertBefore(langDropdown, menu.firstElementChild);
 
@@ -213,108 +181,23 @@ function createOptionIcons() {
                 break;
         }
 
-        save_options();
-        setStatus(); // reload extension
+        saveOptions();
+        setStatus(); // reload extension to reflect changes
     }
 
     darkmodeCheckbox.addEventListener("change", callback);
     langDropdown.addEventListener("change", callback);
-
-    /*darkmodeCheckbox.addEventListener("change", () => {
-        if (darkmodeCheckbox.checked) console.log("darkmode: on");
-        else console.log("darkmode: off");
-
-        save_options();
-        setStatus(); // reload extension
-    });
-
-    langDropdown.addEventListener("change", (evt) => {
-        console.log("language switched to: " + langDropdown.item(langDropdown.selectedIndex).value);
-
-        save_options();
-        setStatus(); // reload extension
-    });*/
-
-    // menu.insertBefore(input, menu.firstElementChild);
-
-    // input.addEventListener("click", () => {
-        // console.log("CLICK");
-        // T0D0 (maybe) create an iframe and put the options.html inside
-        // chrome.runtime.openOptionsPage();
-        // chrome.runtime.sendMessage("showOptions");
-        /*if (chrome.runtime.openOptionsPage) {
-            console.log("chrome.runtime.openOptionsPage");
-            chrome.runtime.openOptionsPage();
-        } else {
-            console.log("else");
-            window.open(chrome.runtime.getURL('options.html'));
-        }*/
-    // });
-
 }
 
-// entry point
-
-/*async function asyncSetStatus() {
-    return new Promise((resolve, reject) => {
-        setStatus();
-        resolve();
-    })
-}*/
-
+// extension entry point
 const init = async () => {
-    /*loadLanguageFiles().then(() => {
-        console.log("calls restore_options()")
-        restoreOptions(); // calls setLanguage()
-        console.log("calls setStatus()")
-        setStatus();
-    });*/
-    // loadLanguageFiles().then(restore_options); // calls setLanguage() and setStatus()
-    // loadLanguageFiles().then(restoreOptions).then(setStatus);
-    // loadLanguageFiles().then(() => console.log("A"))
-    // restoreOptions();
-
-    // loadLanguageFiles().then(() => restoreOptions()).then(() => console.log("A"))
-    // console.log(loadLanguageFiles().then(() => console.log("A")).then())
-
-    // loadLanguageFiles().then(() => getLanguageOption()).then(() => setStatus());
-    // loadLanguageFiles().then(() => restoreOptions())//.then(() => asyncSetStatus());
-
-    /*loadLanguageFiles().then(() => new Promise(restoreOptions))
-        .then(() => new Promise(setStatus));*/
-
-    /*loadLanguageFiles().then(() => new Promise(() => {console.log(1)}))
-        .then(() => new Promise(function(resolve, reject) {resolve();}))
-        .then(() => console.log(3));*/
-
-    /*loadLanguageFiles().then(() => new Promise(() => console.log("success1")), () => {console.log("failure1")})
-        // .then(() => new Promise(() => console.log("success")), () => {console.log("failure")})
-        .then(() => () => console.log("success2"), () => {console.log("failure2")})*/
-    // console.log(loadLanguageFiles().then(() => new Promise(() => console.log("success1")), () => {console.log("failure1")}))
-
-    // loadLanguageFiles -> restoreOptions ->setStatus
-    // setStatus();
     createOptionIcons();
     await loadLanguageFiles();
-    // console.log("awaited 1")
     await restoreOptions()
-    // console.log("awaited 2")
-    // await setStatus();
-    await setObservers(observerCallback);
-    await setStatus();
-    // console.log("awaited 3")
-    // console.log("end of init")
-    // console.log("SetStatus() next")
+    setObservers(observerCallback);
+    setStatus();
 }
 
-
-/*const asyncStuff = async () => {
-    await loadLanguageFiles();
-    await restoreOptions();
-    await setStatus();
-}*/
-
-// init().then(setStatus);
 init().then();
 
 /*if(!ALL_OPTIONS_OFF) {

@@ -1,16 +1,13 @@
 // options
 
+// TODO in the distant future I might add options that let you tailor the extension to your own needs (e.g. hide delivery status and only show deadline status)
+
 /*let DELIVERED_STATUS = true;
 let DEADLINE_STATUS = true;
 let ALL_OPTIONS_OFF = false;
 let USER_LANG = "en";
 let NIGHT_MODE = false;
 let DEBUG = true;*/
-
-/* TODO
-    changing DELIVERED_STATUS or TIME_UNTIL_STATUS should cause the program to run setStatus() again,
-    so that user can see the changes instantly without having to reload the page.
- */
 
 /*function setInternalOptionVariables(...args) {
     DEBUG = args[0];
@@ -21,15 +18,16 @@ let DEBUG = true;*/
     NIGHT_MODE = args[5];
 }*/
 
-function save_options() {
-    /*document.getElementById("devilry-extension-op-delivery")
-    document.getElementById("devilry-extension-op-deadline")
-    document.getElementById("devilry-extension-op-delivered")
-    document.getElementById("devilry-extension-op-notdelivered")
-    document.getElementById("devilry-extension-op-lang").value // TODO add lang dropdown menu
-    document.getElementById("devilry-extension-op-nightmode")
-    document.getElementById("devilry-extension-op-debug")*/
+// inside save_options():
+/*document.getElementById("devilry-extension-op-delivery")
+document.getElementById("devilry-extension-op-deadline")
+document.getElementById("devilry-extension-op-delivered")
+document.getElementById("devilry-extension-op-notdelivered")
+document.getElementById("devilry-extension-op-lang").value
+document.getElementById("devilry-extension-op-nightmode")
+document.getElementById("devilry-extension-op-debug")*/
 
+function saveOptions() {
     let darkmode = document.getElementById("devilry-extension-option-darkmode");
     let language = document.getElementById("devilry-extension-option-language");
 
@@ -38,82 +36,10 @@ function save_options() {
         language: language.item(language.selectedIndex).value
     }, () => {
         console.log("Updated settings.");
-    })
-
-    /*function() { // update status to let user know options were saved
-        if (DEBUG) console.log("Saved settings.");
-
-        let updateStatus = false;
-        let updateLang = false;
-
-        // if old state is different to the updated state, redraw all the status messages (time until delivery, delivery status)
-        if (DELIVERED_STATUS !== document.getElementById("devilry-extension-op-delivery").checked) {
-            updateStatus = true;
-        }
-        if (DEADLINE_STATUS !== document.getElementById("devilry-extension-op-deadline").checked) {
-            updateStatus = true;
-        }
-        // if (USER_LANG !== document.getElementById("devilry-extension-op-lang").value) {
-        //     updateLang = true;
-        // }
-
-        setInternalOptionVariables();
-
-        if (updateStatus) {
-            setStatus();
-        }
-        if (updateLang) {
-            setLang();
-        }
-
-        // T0DO this should return all of the
-        console.log(document.querySelectorAll("input[class^=devilry-extension-op-]"));
-        // setInternalOptionVariables(document.querySelectorAll("input[class^=devilry-extension-op-]"))
-    }*/
-
-    /*chrome.storage.sync.set({
-        showDeliveryStatus: document.getElementById("devilry-extension-op-delivery").checked,
-        showDeadlineStatus: document.getElementById("devilry-extension-op-deadline").checked,
-        showDelivered: document.getElementById("devilry-extension-op-delivered").checked,
-        showNotDelivered: document.getElementById("devilry-extension-op-notdelivered").checked,
-        language: false, // TODO add lang dropdown menu / document.getElementById("devilry-extension-op-lang").value
-        nightmode: document.getElementById("devilry-extension-op-nightmode").checked,
-        showDebugOptions: document.getElementById("devilry-extension-op-debug").checked
-    }, function() { // update status to let user know options were saved
-        if (DEBUG) console.log("Saved settings.");
-
-        let updateStatus = false;
-        let updateLang = false;
-
-        // if old state is different to the updated state, redraw all the status messages (time until delivery, delivery status)
-        if (DELIVERED_STATUS !== document.getElementById("devilry-extension-op-delivery").checked) {
-            updateStatus = true;
-        }
-        if (DEADLINE_STATUS !== document.getElementById("devilry-extension-op-deadline").checked) {
-            updateStatus = true;
-        }
-        // if (USER_LANG !== document.getElementById("devilry-extension-op-lang").value) {
-        //     updateLang = true;
-        // }
-
-        setInternalOptionVariables();
-
-        if (updateStatus) {
-            setStatus();
-        }
-        if (updateLang) {
-            setLang();
-        }
-
-        // T0DO this should return all of the
-        console.log(document.querySelectorAll("input[class^=devilry-extension-op-]"));
-        // setInternalOptionVariables(document.querySelectorAll("input[class^=devilry-extension-op-]"))
-    });*/
+    });
 }
 
 async function restoreOptions() {
-    console.log("restoring options"); // TODO remove
-
     await chrome.storage.sync.get({ darkmode: false, language: ENGLISH })
         .then(
             items => {
@@ -129,59 +55,10 @@ async function restoreOptions() {
                 });
 
                 setLanguage(items.language);
-                console.log("current options: ", items); // TODO remove
+                // console.log("current options: ", items); // TODO maybe remove
             },
             () => console.log("Error restoring extension options.")
         );
-    console.log("options restored") // TODO remove
-    /*await chrome.storage.sync.get({
-        darkmode: false,
-        language: ENGLISH
-    }, items => {
-        let darkmode = document.getElementById("devilry-extension-option-darkmode");
-        let language = document.getElementById("devilry-extension-option-language");
-
-        darkmode.checked = items.darkmode;
-
-        Array.from(language.children).forEach(e => {
-            if (e.value === items.language) {
-                e.setAttribute("selected", "selected");
-            }
-        });
-
-        setLanguage(items.language);
-        console.log("Options ACTUALLY restored (this should happen before \"options restored\"");
-        // setStatus();
-        // if (items.language !== ENGLISH) setStatus(); // reloads extension to reflect users preferred / stored language option. English is the default option,
-
-        console.log("current options: ", items)
-    });*/
-    /*chrome.storage.sync.get({
-        showDeliveryStatus: true,
-        showDeadlineStatus: true,
-        showDelivered: true,
-        showNotDelivered: true,
-        language: false, // TODO "en"
-        nightmode: false,
-        showDebugOptions: false
-    }, function(items) { // update toggle switches to accurately represent users settings
-
-        document.getElementById("devilry-extension-op-delivery").checked = items.showDeliveryStatus;
-        document.getElementById("devilry-extension-op-deadline").checked = items.showDeadlineStatus;
-        document.getElementById("devilry-extension-op-delivered").checked = items.showDelivered;
-        document.getElementById("devilry-extension-op-notdelivered").checked = items.showNotDelivered;
-        document.getElementById("devilry-extension-op-lang").checked = items.language; // TODO add lang dropdown menu - replace .checked with .value or similar
-        document.getElementById("devilry-extension-op-nightmode").checked = items.nightmode;
-        document.getElementById("devilry-extension-op-debug").checked = items.showDebugOptions;
-
-        setInternalOptionVariables(
-            items.showDeliveryStatus,
-            items.showDeadlineStatus,
-            "en", // TODO REPLACE after dropdown is finished
-            items.nightmode,
-            items.showDebugOptions
-        );
-    });*/
 }
 
 // document.addEventListener('DOMContentLoaded', restore_options);
