@@ -22,7 +22,8 @@
         "scripts/darkmode.js"
       ],
       "css": [
-        "css/options.css"
+        "css/options.css",
+        "css/stylesheet.css"
       ],
       "matches": [
         "https://devilry.ifi.uio.no/*"

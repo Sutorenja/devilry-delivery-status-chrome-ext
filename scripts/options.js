@@ -47,6 +47,7 @@ async function restoreOptions() {
                 let language = document.getElementById("devilry-extension-option-language");
 
                 darkmode.checked = items.darkmode;
+                darkened = items.darkmode;
 
                 Array.from(language.children).forEach(e => {
                     if (e.value === items.language) {

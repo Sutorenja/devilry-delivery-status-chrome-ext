@@ -1,0 +1,45 @@
+.extension-darken {} /* used to mark and identify which elements have been affected by darkmode. */
+
+.extension-color-black {
+    color: black !important;
+}
+
+.extension-color-white {
+    color: white;
+}
+
+.extension-color-lightgray {
+    color: lightgray !important; /* unfortunately need the strict !important rule to override devilry default theme. */
+}
+
+.extension-color-gray {
+    color: gray !important;
+}
+
+.extension-bgcolor-black {
+    background: #141414 !important;
+}
+
+body.extension-bgcolor-black {
+    background: #222226 !important;
+}
+
+/*.devilry-extension-lighter {
+    color: lightgray !important;
+}
+
+.devilry-extension-lighten {
+    color: black;
+}
+
+.devilry-extension-darken {
+    color: white;
+}
+
+.devilry-extension-darker {
+    background: #141414 !important;
+}
+
+body.devilry-extension-darken {
+    background: #222226 !important;
+}*/

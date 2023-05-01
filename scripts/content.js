@@ -24,15 +24,17 @@ function setStatus() {
             return;
         }
 
-       createTimeUntil(deadline[0]);
+       createDeadlineStatus(deadline[0]);
        createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
     });
+
+    if (darkened) enableDark(); // setStatus() is the only function that gets called when the DOM changes. We want to update dark mode with DOM changes.
 }
 
 // adds text that says how much time is left until the deadline.
 // if deadline has passed, text will say "deadline has passed".
 // manipulates a <span> element.
-function createTimeUntil(element) {
+function createDeadlineStatus(element) {
     let dateString = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline__datetime")[0].textContent.trim();
     let currentTime = new Date();
     let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
@@ -53,6 +55,9 @@ function createTimeUntil(element) {
 
         strong.appendChild(document.createTextNode(text));
         strong.style.color = color;
+
+        // this data attribute is used by darkmode to change the text color of passed deadlines.
+        span.setAttribute("data-deadline-passed", isNegative(interval).toString());
 
         span.className = "devilry-extension-groupitemvalue-deadline-status";
     } else {
@@ -134,6 +139,7 @@ function createOptionIcons() {
     wrapper.style.display = "flexbox";
     wrapper.style.flexDirection = "column";
     wrapper.style.alignContent = "center";
+    wrapper.classList.add("extension-bgcolor-black");
     // wrapper.style.justifyContent = "center";
 
     // TODO align it in the center
@@ -166,6 +172,9 @@ function createOptionIcons() {
 
     let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
 
+    /*wrapper.append(darkmodeCheckbox, langDropdown);
+    menu.insertBefore(wrapper, menu.firstElementChild);*/
+
     menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
     menu.insertBefore(langDropdown, menu.firstElementChild);
 
@@ -173,7 +182,8 @@ function createOptionIcons() {
         switch(evt.currentTarget.id) {
             case "devilry-extension-option-darkmode":
                 console.log("Darkmode: " + evt.currentTarget.checked);
-                enableDark();
+                if (evt.currentTarget.checked) enableDark();
+                else disableDark();
                 break;
             case "devilry-extension-option-language":
                 console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
@@ -193,9 +203,10 @@ function createOptionIcons() {
 const init = async () => {
     createOptionIcons();
     await loadLanguageFiles();
-    await restoreOptions()
+    await restoreOptions();
     setObservers(observerCallback);
     setStatus();
+    // enableDark(); // for testing
 }
 
 init().then();
