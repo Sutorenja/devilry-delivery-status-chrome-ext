@@ -139,7 +139,9 @@ body.extension-bgcolor-black {
 
 .extension-dropdown {
     background: #333;
-    color: white;
+    color: white; /* #eee */
+    border: 2px solid #eee;
+    border-radius: 10px;
     /* alternative styling: */
     /*background: #457B19;
     color: white;
