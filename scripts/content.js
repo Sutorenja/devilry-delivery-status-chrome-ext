@@ -134,49 +134,62 @@ function observerCallback(mutations) {
 }
 
 function createOptionIcons() {
-    let wrapper = document.createElement("div");
+    /*let wrapper = document.createElement("div");
     wrapper.style.height = "100%";
     wrapper.style.display = "flexbox";
     wrapper.style.flexDirection = "column";
     wrapper.style.alignContent = "center";
-    wrapper.classList.add("extension-bgcolor-black");
+    wrapper.classList.add("extension-bgcolor-black");*/
     // wrapper.style.justifyContent = "center";
+
+    let wrapper = document.createElement("ul");
+    wrapper.classList.add("extension-header");
+    // wrapper.classList.add("extension-bgcolor-black");
 
     // TODO align it in the center
 
-    const createOption = lang => {
+    const createOption = (lang, title) => {
         let option = document.createElement("option");
         option.setAttribute("value", lang);
-        option.innerHTML = lang.split("_")[0].toUpperCase();
+        // option.innerHTML = lang.split("_")[0].toUpperCase();
+        option.innerHTML = title;
 
         // if (lang === "en") option.setAttribute("default", "true");
 
         return option;
     }
 
+    let title = document.createElement("p");
+    title.classList.add("extension-color-white", "extension-ignore-darken");
+    title.textContent = "Extension";
+    title.style.margin = "0px"; // resets the "user agent style" (pretty sure it's set by devilry)
+    title.style.marginRight = "7px";
+
     let darkmodeCheckbox = document.createElement("input");
     darkmodeCheckbox.setAttribute("id", "devilry-extension-option-darkmode");
     darkmodeCheckbox.setAttribute("title", "Toggle darkmode");
-    darkmodeCheckbox.setAttribute("class", "devilry-extension-checkbox"); // TODO generic css for all dropdown goes in ".devilry-extension-checkbox" and specific css for dark mode goes in "#devilry-extension-option-darkmode"
+    darkmodeCheckbox.setAttribute("class", "devilry-extension-checkbox");
     darkmodeCheckbox.type = "checkbox";
     // darkmodeCheckbox.style.paddingRight = "10px";
 
     let langDropdown = document.createElement("select");
     langDropdown.setAttribute("id", "devilry-extension-option-language");
-    langDropdown.setAttribute("title", "Change extension language"); // TODO same as darkmode (generic/specific css)
+    langDropdown.setAttribute("title", "Change extension language");
     langDropdown.setAttribute("name", "language");
     langDropdown.setAttribute("class", "devilry-extension-dropdown");
-    langDropdown.appendChild(createOption(NORWEGIAN));
-    langDropdown.appendChild(createOption(ENGLISH));
+    langDropdown.appendChild(createOption(NORWEGIAN, "Norsk"));
+    langDropdown.appendChild(createOption(ENGLISH, "English"));
     // langDropdown.style.paddingRight = "10px";
 
-    let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
+    // let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
+    let menu = document.querySelector(".cradmin-legacy-menu-content");
 
-    /*wrapper.append(darkmodeCheckbox, langDropdown);
-    menu.insertBefore(wrapper, menu.firstElementChild);*/
+    wrapper.append(title, darkmodeCheckbox, langDropdown);
+    // menu.insertBefore(wrapper, menu.lastElementChild);
+    menu.appendChild(wrapper);
 
-    menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
-    menu.insertBefore(langDropdown, menu.firstElementChild);
+    /*menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
+    menu.insertBefore(langDropdown, menu.firstElementChild);*/
 
     const callback = evt => {
         switch(evt.currentTarget.id) {
@@ -199,14 +212,22 @@ function createOptionIcons() {
     langDropdown.addEventListener("change", callback);
 }
 
+// allows native devilry elements to ignore darkmode
+function ignoreDarkmode() {
+    Array.from(document.getElementsByClassName("devilry-frontpage-listbuilder-roleselect-itemvalue")).forEach(e => {
+        e.classList.add("extension-ignore-darken");
+    });
+}
+
+
 // extension entry point
 const init = async () => {
+    ignoreDarkmode();
     createOptionIcons();
     await loadLanguageFiles();
     await restoreOptions();
     setObservers(observerCallback);
     setStatus();
-    // enableDark(); // for testing
 }
 
 init().then();

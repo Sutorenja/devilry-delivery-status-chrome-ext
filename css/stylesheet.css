@@ -1,7 +1,9 @@
 .extension-darken {} /* used to mark and identify which elements have been affected by darkmode. */
 
+.extension-ignore-darken {} /* used to mark and identify which elements cannot be affected by darkmode. */
+
 .extension-color-black {
-    color: black !important;
+    color: #080808 !important; /* unfortunately need the strict !important rule to override devilry default theme. See: https://stackoverflow.com/questions/4141098/how-do-i-override-a-css-value */
 }
 
 .extension-color-white {
@@ -9,7 +11,7 @@
 }
 
 .extension-color-lightgray {
-    color: lightgray !important; /* unfortunately need the strict !important rule to override devilry default theme. */
+    color: lightgray !important;
 }
 
 .extension-color-gray {
@@ -24,22 +26,59 @@ body.extension-bgcolor-black {
     background: #222226 !important;
 }
 
-/*.devilry-extension-lighter {
-    color: lightgray !important;
+.extension-header {
+    /*position: relative;*/
+    /*left: 50px;*/
+    /*margin: auto;*
+    display: inline-block !important;
+    /*width: 200px;*/
+    /*text-align: center;*/
+    /*background: #040404;*/
+    float: right;
+    padding: 10px !important;
+    border-right: 3px solid #181818;
+    background: #333;
+    vertical-align: bottom /* aligns extension-header to the line of cradmin-legacy-menu-content */
 }
 
-.devilry-extension-lighten {
-    color: black;
+/* aligns children of extension-header to the middle of extension-header's line */
+.extension-header > * {
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    margin-left: 15px;
+    /*margin-right: 5px;*/
 }
 
-.devilry-extension-darken {
-    color: white;
+/* forces the content of extension-header to vertically align in the center */
+/* see https://codepen.io/edge0703/pen/DzaEex */
+.extension-header:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
 }
 
-.devilry-extension-darker {
-    background: #141414 !important;
+/*.extension-header::before {
+    box-sizing: border-box;
 }
 
-body.devilry-extension-darken {
-    background: #222226 !important;
+.extension-header::after {
+    box-sizing: border-box;
 }*/
+
+#devilry-extension-option-darkmode {
+
+}
+
+#devilry-extension-option-language {
+
+}
+
+.devilry-extension-checkbox {
+
+}
+
+.devilry-extension-dropdown {
+
+}
