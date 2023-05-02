@@ -1,3 +1,5 @@
+/* dark mode related CSS */
+
 .extension-darken {} /* used to mark and identify which elements have been affected by darkmode. */
 
 .extension-ignore-darken {} /* used to mark and identify which elements cannot be affected by darkmode. */
@@ -36,7 +38,7 @@ body.extension-bgcolor-black {
     /*background: #040404;*/
     float: right;
     padding: 10px !important;
-    border-right: 3px solid #181818;
+    border-right: 4px solid #191919;
     background: #333;
     vertical-align: bottom /* aligns extension-header to the line of cradmin-legacy-menu-content */
 }
@@ -67,18 +69,79 @@ body.extension-bgcolor-black {
     box-sizing: border-box;
 }*/
 
-#devilry-extension-option-darkmode {
+/*#extension-option-darkmode {
 
 }
 
-#devilry-extension-option-language {
+#extension-option-language {
 
+}*/
+
+/* Options related CSS */
+
+/* toggle switch: https://www.w3schools.com/howto/howto_css_switch.asp */
+.extension-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
 
-.devilry-extension-checkbox {
-
+.extension-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.devilry-extension-dropdown {
+.extension-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ddd; /* this decides the color of the switch's background when unchecked */
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px; /* Rounded sliders */
+}
 
+.extension-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #333; /* this decides the color of the dot when unchecked */
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%; /* Rounded sliders */
+}
+
+.extension-switch input:checked + .extension-switch-slider {
+    background-color: black; /* this decides the color of the switch's background when checked */
+}
+
+.extension-switch input:checked + .extension-switch-slider:before {
+    background-color: white; /* this decides the color of the dot when checked */
+}
+
+.extension-switch input:focus + .extension-switch-slider {
+    box-shadow: 0 0 1px black;
+}
+
+.extension-switch input:checked + .extension-switch-slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.extension-dropdown {
+    background: #333;
+    color: white;
+    /* alternative styling: */
+    /*background: #457B19;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/ /* adds an outline to the text */
 }

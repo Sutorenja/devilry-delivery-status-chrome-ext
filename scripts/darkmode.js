@@ -37,6 +37,7 @@ function enableDark() {
     });
 
     // more edge cases (containers that show up when you click on an assignment):
+    // TODO the two below dont fully work!
     Array.from(document.getElementsByClassName("devilry-group-feedbackfeed-buttonbar")).forEach(e => {
         e.firstElementChild.classList.add("extension-bgcolor-black", "extension-darken");
     });

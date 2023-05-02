@@ -166,17 +166,24 @@ function createOptionIcons() {
     title.style.marginRight = "7px";
 
     let darkmodeCheckbox = document.createElement("input");
-    darkmodeCheckbox.setAttribute("id", "devilry-extension-option-darkmode");
-    darkmodeCheckbox.setAttribute("title", "Toggle darkmode");
-    darkmodeCheckbox.setAttribute("class", "devilry-extension-checkbox");
+    darkmodeCheckbox.setAttribute("id", "devilry-extension-option-darkmode"); // this ID is used to fetch the value of the checkbox
     darkmodeCheckbox.type = "checkbox";
+    // darkmodeCheckbox.setAttribute("class", "extension-checkbox");
     // darkmodeCheckbox.style.paddingRight = "10px";
+
+    let darkmodeSwitch = document.createElement("label");
+    darkmodeCheckbox.setAttribute("title", "Toggle darkmode");
+    darkmodeSwitch.setAttribute("class", "extension-switch");
+
+    let switchBackground = document.createElement("span");
+    switchBackground.setAttribute("class", "extension-switch-slider");
+    darkmodeSwitch.append(darkmodeCheckbox, switchBackground)
 
     let langDropdown = document.createElement("select");
     langDropdown.setAttribute("id", "devilry-extension-option-language");
     langDropdown.setAttribute("title", "Change extension language");
     langDropdown.setAttribute("name", "language");
-    langDropdown.setAttribute("class", "devilry-extension-dropdown");
+    langDropdown.setAttribute("class", "extension-dropdown");
     langDropdown.appendChild(createOption(NORWEGIAN, "Norsk"));
     langDropdown.appendChild(createOption(ENGLISH, "English"));
     // langDropdown.style.paddingRight = "10px";
@@ -184,7 +191,8 @@ function createOptionIcons() {
     // let menu = document.querySelector(".cradmin-legacy-menu-content-footer");
     let menu = document.querySelector(".cradmin-legacy-menu-content");
 
-    wrapper.append(title, darkmodeCheckbox, langDropdown);
+    // wrapper.append(title, darkmodeCheckbox, langDropdown); // this code WORKS
+    wrapper.append(title, darkmodeSwitch, langDropdown); // this code is unstable
     // menu.insertBefore(wrapper, menu.lastElementChild);
     menu.appendChild(wrapper);
 
