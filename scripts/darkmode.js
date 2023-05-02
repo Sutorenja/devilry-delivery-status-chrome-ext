@@ -36,6 +36,15 @@ function enableDark() {
         if (e.getAttribute("data-deadline-passed") === "true") console.log("AAAAAAAA")
     });
 
+    // more edge cases (containers that show up when you click on an assignment):
+    Array.from(document.getElementsByClassName("devilry-group-feedbackfeed-buttonbar")).forEach(e => {
+        e.firstElementChild.classList.add("extension-bgcolor-black", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("comment-form-container")).forEach(e => {
+        e.firstElementChild.classList.add("extension-bgcolor-black", "extension-darken");
+    });
+
     darkened = true;
 }
 
