@@ -42,6 +42,10 @@ function createDeadlineStatus(element) {
     let color = "black";
     let text;
 
+    // TODO remove this if statement:
+    if (currentLanguageOption === ENGLISH) console.log("createDeadlineStatus: current language is english")
+    else if (currentLanguageOption === NORWEGIAN) console.log("createDeadlineStatus: current language is norwegian")
+
     if (isNegative(interval)) {
         text = getTranslation(DEADLINE_PASSED);
         color = "Gray";

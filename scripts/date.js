@@ -108,11 +108,6 @@ function getTranslatableDateString(msInterval) {
         }
     };
 
-    console.log(AND)
-    console.log(currentLanguage)
-    console.log(currentLanguage[AND])
-    console.log(Object.keys(currentLanguage))
-
     addToStringTranslatable(MONTH, MONTHS, getMonths);
 
     addToStringTranslatable(WEEK, WEEKS, getWeeks);

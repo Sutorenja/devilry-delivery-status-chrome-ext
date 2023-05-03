@@ -26,7 +26,7 @@ const DARKMODE_TITLE = "option.darkmode.title";
 const LANGUAGE_TITLE = "option.language.title";
 
 const languages = {};
-let currentLanguage;
+// let currentLanguage;
 let currentLanguageOption = ENGLISH; // default option
 
 /* function has to be async to await fetch() calls. */
@@ -34,11 +34,14 @@ async function loadLanguageFiles() {
     const EN_file = chrome.runtime.getURL(ENGLISH);
     const NO_file = chrome.runtime.getURL(NORWEGIAN);
 
-    const build = data => {
+    const build = async data => {
+        // console.log("building...")
         let languageDict = {};
 
-        data.text().then(text => {
+        await data.text().then(text => {
             let lines = text.split("\r\n");
+            // console.log(text)
+            // console.log(lines)
 
             lines.forEach(line => {
                 let kv = line.split(",");
@@ -46,34 +49,52 @@ async function loadLanguageFiles() {
                 languageDict[kv[0]] = kv[1]; //.replaceAll("\r", "");
             });
 
-            return languageDict
+            // console.log("returning....")
+            // console.log(languageDict)
+            return languageDict;
         });
 
-        return languageDict
+        return languageDict;
     }
 
-    const read = async filename => {
+    /*const read = async filename => {
+        let fetchedData;
         await fetch(filename).then(
-            data => languages[filename.split("/").pop()] = build(data),
+            // data => languages[filename.split("/").pop()] = build(data),
+            // data => { languages[filename.split("/").pop()] = build(data); console.log("read > fetch > build") },
+            data => fetchedData = data,
             () => console.log("Error fetching data from: " + filename));
-    }
+        await fetchedData;
+        languages[filename.split("/").pop()] = build(fetchedData);
+    }*/
 
-    await read(EN_file);
-    await read(NO_file);
-    setLanguage(ENGLISH);
-    console.log("language loaded and set to: ", currentLanguage);
+    let langDicts = {};
+    await fetch(EN_file).then(data => langDicts[EN_file] = data);
+    await fetch(NO_file).then(data => langDicts[NO_file] = data);
+
+    await build(langDicts[EN_file]).then(lang => languages[ENGLISH] = lang)
+    await build(langDicts[NO_file]).then(lang => languages[NORWEGIAN] = lang)
+
+    // await read(EN_file);
+    // await read(NO_file);
+    // await fetch(EN_file).then(data => languages[ENGLISH] = build(data)).then(() => console.log("done with EN!"));
+    // await fetch(NO_file).then(data => languages[NORWEGIAN] = build(data)).then(() => console.log("done with NO!"));
+    console.log("loadLanguageFiles: language files loaded.")
+    console.log("english: ", tempGetLanguageString(languages[ENGLISH]))
+    console.log("norwegian: ", tempGetLanguageString(languages[NORWEGIAN]))
 }
 
-function setLanguage(lang) {
+/*function setLanguage(lang) {
     console.log("setting language to: ", lang)
     console.log("keys: ", Object.keys(languages))
     console.log(languages[lang])
     currentLanguage = languages[lang];
     console.log("setLanguage() language set to: ", currentLanguage)
-}
+}*/
 
 function updateLang(lang) {
     currentLanguageOption = lang;
+    console.log("language set to: ", lang)
 }
 
 // example usage: getTranslation(WHEN) -> "due in" (if language is set to English)
@@ -82,7 +103,23 @@ function getTranslation(key) {
     // if (Object.values(Object.keys(currentLanguage)).indexOf(key) === -1) throw new Error(key + " is not a key in language file " + Object.keys(languages).find(key => languages[key] === currentLanguage));
     let currentLang = languages[currentLanguageOption];
 
+    console.log("fetching value:", key)
+    if (currentLanguageOption === ENGLISH) console.log("getTranslation: current language is english")
+    else if (currentLanguageOption === NORWEGIAN) console.log("getTranslation: current language is norwegian")
+    console.log("getTranslation: returning value:", currentLang[key])
+    console.log("current language: ", tempGetLanguageString(currentLang))
+
     let translation = currentLang[key];
     if (translation === "" || translation === undefined || translation === null) return languages[ENGLISH][key]; // if no translation, return default language option
     return translation;
+}
+
+// testing function
+function tempGetLanguageString(lang) {
+    let str = "";
+    for (let [key, value] of Object.entries(lang)) {
+        str += `${key}: ${value},`;
+    }
+    str = "{" + str.substring(0, str.length - 1) + "}";
+    return str;
 }

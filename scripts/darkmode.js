@@ -32,8 +32,8 @@ function enableDark() {
         e.firstElementChild.classList.add("extension-darken");
         if (e.getAttribute("data-deadline-passed") === "true") e.firstElementChild.classList.add("extension-color-black")
         else e.firstElementChild.classList.add("extension-color-gray");
-        console.log(e.textContent, e.getAttribute("data-deadline-passed"), e.firstElementChild.style.color);
-        if (e.getAttribute("data-deadline-passed") === "true") console.log("AAAAAAAA")
+        /*console.log(e.textContent, e.getAttribute("data-deadline-passed"), e.firstElementChild.style.color);
+        if (e.getAttribute("data-deadline-passed") === "true") console.log("AAAAAAAA")*/
     });
 
     // more edge cases (containers that show up when you click on an assignment):

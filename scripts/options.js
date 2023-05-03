@@ -40,10 +40,12 @@ function saveOptions() {
 }
 
 async function restoreOptions() {
-    console.log("restoring options")
     await chrome.storage.sync.get({ darkmode: false, language: ENGLISH })
         .then(
             items => {
+                updateLang(items.language);
+
+                // all code below is just to update the DOM elements:
                 let darkmode = document.getElementById("devilry-extension-option-darkmode");
                 let language = document.getElementById("devilry-extension-option-language");
 
@@ -51,19 +53,11 @@ async function restoreOptions() {
                 darkened = items.darkmode;
 
                 Array.from(language.children).forEach(e => {
-                    if (e.value === items.language) {
-                        e.setAttribute("selected", "selected");
-                    }
+                    if (e.value === items.language) e.setAttribute("selected", "selected");
                 });
-
-                setLanguage(items.language);
-                updateLang(items.language);
-                // console.log("current options: ", items); // TODO maybe remove
             },
             () => console.log("Error restoring extension options.")
         );
-    console.log("Options restored")
-    console.log("language set to: ", currentLanguage)
 }
 
 // document.addEventListener('DOMContentLoaded', restore_options);
