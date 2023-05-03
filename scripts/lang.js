@@ -68,20 +68,30 @@ async function loadLanguageFiles() {
         languages[filename.split("/").pop()] = build(fetchedData);
     }*/
 
-    let langDicts = {};
+    /*let langDicts = {};
     await fetch(EN_file).then(data => langDicts[EN_file] = data);
     await fetch(NO_file).then(data => langDicts[NO_file] = data);
 
     await build(langDicts[EN_file]).then(lang => languages[ENGLISH] = lang)
-    await build(langDicts[NO_file]).then(lang => languages[NORWEGIAN] = lang)
+    await build(langDicts[NO_file]).then(lang => languages[NORWEGIAN] = lang)*/
 
-    // await read(EN_file);
-    // await read(NO_file);
-    // await fetch(EN_file).then(data => languages[ENGLISH] = build(data)).then(() => console.log("done with EN!"));
-    // await fetch(NO_file).then(data => languages[NORWEGIAN] = build(data)).then(() => console.log("done with NO!"));
-    console.log("loadLanguageFiles: language files loaded.")
-    console.log("english: ", tempGetLanguageString(languages[ENGLISH]))
-    console.log("norwegian: ", tempGetLanguageString(languages[NORWEGIAN]))
+    const read = async (filename, constant) => {
+        let langDicts = {};
+        await fetch(filename).then(data => langDicts[filename] = data);
+        await build(langDicts[filename]).then(lang => languages[constant] = lang);
+    }
+
+    await read(EN_file, ENGLISH);
+    await read(NO_file, NORWEGIAN);
+
+    /* await read(EN_file);
+    await read(NO_file);
+    await fetch(EN_file).then(data => languages[ENGLISH] = build(data)).then(() => console.log("done with EN!"));
+    await fetch(NO_file).then(data => languages[NORWEGIAN] = build(data)).then(() => console.log("done with NO!"));*/
+
+    // console.log("loadLanguageFiles: language files loaded.")
+    // console.log("english: ", getStaticDictionary(languages[ENGLISH]))
+    // console.log("norwegian: ", getStaticDictionary(languages[NORWEGIAN]))
 }
 
 /*function setLanguage(lang) {
@@ -94,7 +104,7 @@ async function loadLanguageFiles() {
 
 function updateLang(lang) {
     currentLanguageOption = lang;
-    console.log("language set to: ", lang)
+    // console.log("language set to: ", lang)
 }
 
 // example usage: getTranslation(WHEN) -> "due in" (if language is set to English)
@@ -103,19 +113,21 @@ function getTranslation(key) {
     // if (Object.values(Object.keys(currentLanguage)).indexOf(key) === -1) throw new Error(key + " is not a key in language file " + Object.keys(languages).find(key => languages[key] === currentLanguage));
     let currentLang = languages[currentLanguageOption];
 
-    console.log("fetching value:", key)
-    if (currentLanguageOption === ENGLISH) console.log("getTranslation: current language is english")
-    else if (currentLanguageOption === NORWEGIAN) console.log("getTranslation: current language is norwegian")
-    console.log("getTranslation: returning value:", currentLang[key])
-    console.log("current language: ", tempGetLanguageString(currentLang))
+    // console.log("fetching value:", key)
+    // if (currentLanguageOption === ENGLISH) console.log("getTranslation: current language is english")
+    // else if (currentLanguageOption === NORWEGIAN) console.log("getTranslation: current language is norwegian")
+    // console.log("getTranslation: returning value:", currentLang[key])
+    // console.log("current language: ", getStaticDictionary(currentLang))
 
     let translation = currentLang[key];
     if (translation === "" || translation === undefined || translation === null) return languages[ENGLISH][key]; // if no translation, return default language option
     return translation;
 }
 
-// testing function
-function tempGetLanguageString(lang) {
+// testing function that prints out a dictionary.
+// values are dynamically displayed in the browser console (meaning they update automatically to reflect the current state of the object).
+// sometimes, this is amazing, but when you have race conditions, it's incredibly frustrating to deal with.
+function getStaticDictionary(lang) {
     let str = "";
     for (let [key, value] of Object.entries(lang)) {
         str += `${key}: ${value},`;

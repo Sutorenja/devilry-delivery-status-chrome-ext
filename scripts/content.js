@@ -43,8 +43,8 @@ function createDeadlineStatus(element) {
     let text;
 
     // TODO remove this if statement:
-    if (currentLanguageOption === ENGLISH) console.log("createDeadlineStatus: current language is english")
-    else if (currentLanguageOption === NORWEGIAN) console.log("createDeadlineStatus: current language is norwegian")
+    // if (currentLanguageOption === ENGLISH) console.log("createDeadlineStatus: current language is english")
+    // else if (currentLanguageOption === NORWEGIAN) console.log("createDeadlineStatus: current language is norwegian")
 
     if (isNegative(interval)) {
         text = getTranslation(DEADLINE_PASSED);
@@ -142,6 +142,18 @@ function updateOptionIcons() {
     document.getElementById("devilry-extension-option-language").setAttribute("title", getTranslation(LANGUAGE_TITLE));
 }
 
+function testParse() {
+    let parser = new DOMParser();
+    let element = parser.parseFromString("" +
+        "<label title='aaaaaaaa'>" +
+        "aaaaaaaaaaaaaaaaaaaaaaa" +
+        "<input type='checkbox'>" +
+        "<span>cccccccccccc</span>" +
+        "</label>", "text/html");
+    console.log(element.body.firstElementChild)
+    // document.body.appendChild(element);
+}
+
 function createOptionIcons() {
     console.log("creating option icons") // TODO REMOVE
     /*let wrapper = document.createElement("div");
@@ -187,7 +199,27 @@ function createOptionIcons() {
 
     let switchBackground = document.createElement("span");
     switchBackground.setAttribute("class", "extension-switch-slider");
-    darkmodeSwitch.append(darkmodeCheckbox, switchBackground)
+    darkmodeSwitch.append(darkmodeCheckbox, switchBackground);
+
+    // translates all the document.createElement() + element.setAttribute() stuff
+    // into HTML strings that get parsed with DOMParser.
+    // doesn't seem to work rn, so sticking to the old solution for now.
+    /*let parser = new DOMParser();
+
+    let darkmode = parser.parseFromString(
+        "<label class='extension-switch' title='placeholder'>" +
+            "<input id='devilry-extension-option-language' type='checkbox'>" +
+            "<span class='extension-switch-slider'></span>" +
+        "</label>",
+        "text/html"
+    );
+
+    let language = parser.parseFromString(
+        "<select id='devilry-extension-option-language' name='language' class='extension-dropdown'></select>",
+        "text/html" // "<select id='devilry-extension-option-language' title='placeholder' name='language' class='extension-dropdown'></select>"
+    );
+
+    wrapper.append(title, darkmode.body.firstElementChild, language.body.firstElementChild);*/
 
     let langDropdown = document.createElement("select");
     langDropdown.setAttribute("id", "devilry-extension-option-language");
@@ -202,8 +234,9 @@ function createOptionIcons() {
     let menu = document.querySelector(".cradmin-legacy-menu-content");
 
     // wrapper.append(title, darkmodeCheckbox, langDropdown); // this code WORKS
-    wrapper.append(title, darkmodeSwitch, langDropdown); // this code is unstable
     // menu.insertBefore(wrapper, menu.lastElementChild);
+
+    wrapper.append(title, darkmodeSwitch, langDropdown);
     menu.appendChild(wrapper);
 
     /*menu.insertBefore(darkmodeCheckbox, menu.firstElementChild);
@@ -218,7 +251,7 @@ function createOptionIcons() {
                 break;
             case "devilry-extension-option-language":
                 console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
-                setLanguage(evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
+                // setLanguage(evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
                 updateLang((evt.currentTarget.item(evt.currentTarget.selectedIndex).value));
                 break;
         }
@@ -247,9 +280,10 @@ const init = async () => {
     await loadLanguageFiles();
     createOptionIcons();
     await restoreOptions();
-    updateOptionIcons(); // createOptionIcons() has to be called before restoreOptions(), but users preferred language gets retrieved in restoreOptions and won't be reflected in createOptionIcons. Therefore we need to update the title after restoring kanguage options.
+    updateOptionIcons(); // createOptionIcons() has to be called before restoreOptions(), but users preferred language gets retrieved in restoreOptions and won't be reflected in createOptionIcons. Therefore, we need to update the title after restoring the language options.
     setObservers(observerCallback);
     setStatus();
+    testParse();
 }
 
 init().then();
