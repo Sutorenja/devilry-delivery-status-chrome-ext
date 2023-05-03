@@ -40,6 +40,7 @@ function saveOptions() {
 }
 
 async function restoreOptions() {
+    console.log("restoring options")
     await chrome.storage.sync.get({ darkmode: false, language: ENGLISH })
         .then(
             items => {
@@ -56,10 +57,13 @@ async function restoreOptions() {
                 });
 
                 setLanguage(items.language);
+                updateLang(items.language);
                 // console.log("current options: ", items); // TODO maybe remove
             },
             () => console.log("Error restoring extension options.")
         );
+    console.log("Options restored")
+    console.log("language set to: ", currentLanguage)
 }
 
 // document.addEventListener('DOMContentLoaded', restore_options);

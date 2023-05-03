@@ -43,9 +43,9 @@ function createDeadlineStatus(element) {
     let text;
 
     if (isNegative(interval)) {
-        text = currentLanguage[DEADLINE_PASSED];
+        text = getTranslation(DEADLINE_PASSED);
         color = "Gray";
-    } else text = currentLanguage[WHEN] + " " + getTranslatableDateString(interval);
+    } else text = getTranslation(WHEN) + " " + getTranslatableDateString(interval);
 
     let textElementCollection = element.getElementsByClassName("devilry-extension-groupitemvalue-deadline-status");
 
@@ -70,7 +70,7 @@ function createDeadlineStatus(element) {
 // element is usually a <span> element.
 // fileAmount is an int.
 function createDeliveryStatus(element, fileAmount) {
-    let text = (parseInt(fileAmount) > 0 ? currentLanguage[DELIVERED_TRUE] : currentLanguage[DELIVERED_FALSE]);
+    let text = (parseInt(fileAmount) > 0 ? getTranslation(DELIVERED_TRUE) : getTranslation(DELIVERED_FALSE));
     let color = (parseInt(fileAmount) > 0 ? "DarkGreen" : "Red"); // maybe switch from 'Red' to 'OrangeRed'
 
     // looks for a delivery status (span). creates a new delivery status (span) if none found.
@@ -133,7 +133,13 @@ function observerCallback(mutations) {
     }
 }
 
+function updateOptionIcons() {
+    document.getElementById("devilry-extension-option-darkmode").parentElement.setAttribute("title", getTranslation(DARKMODE_TITLE));
+    document.getElementById("devilry-extension-option-language").setAttribute("title", getTranslation(LANGUAGE_TITLE));
+}
+
 function createOptionIcons() {
+    console.log("creating option icons") // TODO REMOVE
     /*let wrapper = document.createElement("div");
     wrapper.style.height = "100%";
     wrapper.style.display = "flexbox";
@@ -172,7 +178,7 @@ function createOptionIcons() {
     // darkmodeCheckbox.style.paddingRight = "10px";
 
     let darkmodeSwitch = document.createElement("label");
-    darkmodeCheckbox.setAttribute("title", "Toggle darkmode");
+    darkmodeSwitch.setAttribute("title", getTranslation(DARKMODE_TITLE));
     darkmodeSwitch.setAttribute("class", "extension-switch");
 
     let switchBackground = document.createElement("span");
@@ -181,7 +187,7 @@ function createOptionIcons() {
 
     let langDropdown = document.createElement("select");
     langDropdown.setAttribute("id", "devilry-extension-option-language");
-    langDropdown.setAttribute("title", "Change extension language");
+    langDropdown.setAttribute("title", getTranslation(LANGUAGE_TITLE));
     langDropdown.setAttribute("name", "language");
     langDropdown.setAttribute("class", "extension-dropdown");
     langDropdown.appendChild(createOption(NORWEGIAN, "Norsk"));
@@ -209,15 +215,18 @@ function createOptionIcons() {
             case "devilry-extension-option-language":
                 console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
                 setLanguage(evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
+                updateLang((evt.currentTarget.item(evt.currentTarget.selectedIndex).value));
                 break;
         }
 
         saveOptions();
         setStatus(); // reload extension to reflect changes
+        updateOptionIcons(); // reloads option elements to reflect changes
     }
 
     darkmodeCheckbox.addEventListener("change", callback);
     langDropdown.addEventListener("change", callback);
+    console.log("option icons created") // TODO REMOVE
 }
 
 // allows native devilry elements to ignore darkmode
@@ -231,9 +240,10 @@ function ignoreDarkmode() {
 // extension entry point
 const init = async () => {
     ignoreDarkmode();
-    createOptionIcons();
     await loadLanguageFiles();
+    createOptionIcons();
     await restoreOptions();
+    updateOptionIcons(); // createOptionIcons() has to be called before restoreOptions(), but users preferred language gets retrieved in restoreOptions and won't be reflected in createOptionIcons. Therefore we need to update the title after restoring kanguage options.
     setObservers(observerCallback);
     setStatus();
 }

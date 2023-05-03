@@ -15,3 +15,5 @@ minute,minute
 minute.plural,minutes
 second,second
 second.plural,seconds
+option.darkmode.title,Toggle darkmode
+option.language.title,Change extension language

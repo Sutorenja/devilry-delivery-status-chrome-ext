@@ -102,30 +102,35 @@ function getTranslatableDateString(msInterval) {
             count++;
 
             string += floored + " ";
-            if (floored > 1) string += currentLanguage[pluralUnit];
-            else string += currentLanguage[unit]
-            string += " " + currentLanguage[AND] + " ";
+            if (floored > 1) string += getTranslation(pluralUnit);
+            else string += getTranslation(unit)
+            string += " " + getTranslation(AND) + " ";
         }
     };
+
+    console.log(AND)
+    console.log(currentLanguage)
+    console.log(currentLanguage[AND])
+    console.log(Object.keys(currentLanguage))
 
     addToStringTranslatable(MONTH, MONTHS, getMonths);
 
     addToStringTranslatable(WEEK, WEEKS, getWeeks);
-    if (count === 2) return string.substring(0, string.length - currentLanguage[AND].length - 2); // removes "and " from the end of the string
+    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2); // removes "and " from the end of the string
 
     addToStringTranslatable(DAY, DAYS, getDays);
-    if (count === 2) return string.substring(0, string.length - currentLanguage[AND].length - 2);
+    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
 
     addToStringTranslatable(HOUR, HOURS, getHours);
-    if (count === 2) return string.substring(0, string.length - currentLanguage[AND].length - 2);
+    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
 
     addToStringTranslatable(MINUTE, MINUTES, getMinutes);
-    if (count === 2) return string.substring(0, string.length - currentLanguage[AND].length - 2);
+    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
 
     addToStringTranslatable(SECOND, SECONDS, getSeconds);
-    if (count === 2) return string.substring(0, string.length - currentLanguage[AND].length - 2);
+    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
 
-    if (count === 1) return string.substring(0, string.length - currentLanguage[AND].length - 2);
+    if (count === 1) return string.substring(0, string.length - getTranslation(AND).length - 2);
 
     return string;
 }
