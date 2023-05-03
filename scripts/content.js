@@ -42,7 +42,7 @@ function createDeadlineStatus(element) {
     let color = "black";
     let text;
 
-    // TODO remove this if statement:
+    // TODO remove
     // if (currentLanguageOption === ENGLISH) console.log("createDeadlineStatus: current language is english")
     // else if (currentLanguageOption === NORWEGIAN) console.log("createDeadlineStatus: current language is norwegian")
 
@@ -142,6 +142,7 @@ function updateOptionIcons() {
     document.getElementById("devilry-extension-option-language").setAttribute("title", getTranslation(LANGUAGE_TITLE));
 }
 
+// temporary testing function
 function testParse() {
     let parser = new DOMParser();
     let element = parser.parseFromString("" +
@@ -155,7 +156,7 @@ function testParse() {
 }
 
 function createOptionIcons() {
-    console.log("creating option icons") // TODO REMOVE
+    // console.log("creating option icons") // TODO REMOVE
     /*let wrapper = document.createElement("div");
     wrapper.style.height = "100%";
     wrapper.style.display = "flexbox";
@@ -245,13 +246,12 @@ function createOptionIcons() {
     const callback = evt => {
         switch(evt.currentTarget.id) {
             case "devilry-extension-option-darkmode":
-                console.log("Darkmode: " + evt.currentTarget.checked);
+                // console.log("Darkmode: " + evt.currentTarget.checked);
                 if (evt.currentTarget.checked) enableDark();
                 else disableDark();
                 break;
             case "devilry-extension-option-language":
-                console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
-                // setLanguage(evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
+                // console.log("Language switched to: " + evt.currentTarget.item(evt.currentTarget.selectedIndex).value);
                 updateLang((evt.currentTarget.item(evt.currentTarget.selectedIndex).value));
                 break;
         }
@@ -263,7 +263,7 @@ function createOptionIcons() {
 
     darkmodeCheckbox.addEventListener("change", callback);
     langDropdown.addEventListener("change", callback);
-    console.log("option icons created") // TODO REMOVE
+    // console.log("option icons created") // TODO REMOVE
 }
 
 // allows native devilry elements to ignore darkmode
@@ -283,7 +283,6 @@ const init = async () => {
     updateOptionIcons(); // createOptionIcons() has to be called before restoreOptions(), but users preferred language gets retrieved in restoreOptions and won't be reflected in createOptionIcons. Therefore, we need to update the title after restoring the language options.
     setObservers(observerCallback);
     setStatus();
-    testParse();
 }
 
 init().then();
