@@ -57,7 +57,7 @@ function setStatus() {
 function createDeadlineStatus(element) {
     let dateString = element.getElementsByClassName("devilry-cradmin-groupitemvalue-deadline__datetime")[0].textContent.trim();
     let currentTime = new Date();
-    let deadline = new Date(dateString); // using Date(dateString) can be problematic: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#syntax
+    let deadline = translateDate(dateString);
     let interval = deadline.getTime() - currentTime.getTime();
     let color = "black";
     let text;
