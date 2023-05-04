@@ -28,6 +28,22 @@ body.extension-bgcolor-black {
     background: #222226 !important;
 }
 
+.extension-border-color-black {
+    border-color: black !important;
+}
+
+.extension-button-darken {
+    background: #222226 !important;
+    border-color: #222226 !important;
+    color: white !important;
+}
+
+.extension-button-darken2 {
+    background: #222226 !important;
+    border-color: #444 !important;
+    color: white !important;
+}
+
 .extension-header {
     /*position: relative;*/
     /*left: 50px;*/

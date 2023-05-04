@@ -7,6 +7,8 @@
 */
 
 const gradedAssignments = [];
+const allAssignments = [];
+const duplicateAssignments = [];
 
 // function that goes through every assignment and checks their delivery status.
 // if 'student files' (fileAmount) is greater than 0, then assignment is delivered, else not delivered.
@@ -23,6 +25,24 @@ function setStatus() {
             gradedAssignments.push(content);
             return;
         }
+
+        // create assignment object
+        let assignment = {
+            name: element.getElementsByClassName("cradmin-legacy-listbuilder-itemvalue-titledescription-title")[0].innerHTML.replaceAll(" ", ""),
+            status: content[0].innerHTML.replaceAll(" ", ""),
+            deadline: deadline[0].innerHTML.replaceAll(" ", "")
+        };
+
+        allAssignments.forEach(a => {
+            if (compareAssignment(assignment, a)) duplicateAssignments.push(element);
+            else allAssignments.push(assignment);
+        });
+        if (allAssignments.length === 0) allAssignments.push(assignment);
+
+
+        /*assignment.name = element.getElementsByClassName("cradmin-legacy-listbuilder-itemvalue-titledescription-title")[0].innerHTML;
+        assignment.status = content[0].innerHTML;
+        assignment.deadline = deadline[0].innerHTML;*/
 
        createDeadlineStatus(deadline[0]);
        createDeliveryStatus(content[0], fileAmount[0].innerHTML.replace(/[^0-9]/g, ''));
@@ -95,6 +115,16 @@ function createDeliveryStatus(element, fileAmount) {
     }
 }
 
+/* Natively, some assignments are shown twice.
+* once in 'All assignments' and once in 'upcoming assignments'.
+* This can get annoying at times. If you have two upcoming assignments due,
+* at first glance it may look like you actually have 4 assignments due!
+* */
+function removeDuplicateAssignments(assignments) {
+    if (!DUPLICATE_ALLOWED) return; // temp for testing
+    assignments.forEach(element => element.remove()); // element.parentElement.removeChild(element)
+}
+
 // this function is necessary to force the extension to "update", even when the page doesn't physically change.
 // (i.e. doing something on the page that updates the DOM of the page WITHOUT actually ever switching pages).
 // The extension's content script only reloads when you switch pages/reload the page.
@@ -135,11 +165,6 @@ function observerCallback(mutations) {
     if (window.location.href.startsWith("https://devilry.ifi.uio.no/devilry_student")) {
         setStatus();
     }
-}
-
-function updateOptionIcons() {
-    document.getElementById("devilry-extension-option-darkmode").parentElement.setAttribute("title", getTranslation(DARKMODE_TITLE));
-    document.getElementById("devilry-extension-option-language").setAttribute("title", getTranslation(LANGUAGE_TITLE));
 }
 
 // temporary testing function
@@ -266,6 +291,11 @@ function createOptionIcons() {
     // console.log("option icons created") // TODO REMOVE
 }
 
+function updateOptionIcons() {
+    document.getElementById("devilry-extension-option-darkmode").parentElement.setAttribute("title", getTranslation(DARKMODE_TITLE));
+    document.getElementById("devilry-extension-option-language").setAttribute("title", getTranslation(LANGUAGE_TITLE));
+}
+
 // allows native devilry elements to ignore darkmode
 function ignoreDarkmode() {
     Array.from(document.getElementsByClassName("devilry-frontpage-listbuilder-roleselect-itemvalue")).forEach(e => {
@@ -273,6 +303,7 @@ function ignoreDarkmode() {
     });
 }
 
+const DUPLICATE_ALLOWED = false; // for testing, can eventually remove
 
 // extension entry point
 const init = async () => {
@@ -283,6 +314,7 @@ const init = async () => {
     updateOptionIcons(); // createOptionIcons() has to be called before restoreOptions(), but users preferred language gets retrieved in restoreOptions and won't be reflected in createOptionIcons. Therefore, we need to update the title after restoring the language options.
     setObservers(observerCallback);
     setStatus();
+    removeDuplicateAssignments(duplicateAssignments);
 }
 
 init().then();

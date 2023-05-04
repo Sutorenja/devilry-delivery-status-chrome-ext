@@ -15,6 +15,7 @@
   "content_scripts": [
     {
       "js": [
+        "scripts/utils.js",
         "scripts/date.js",
         "scripts/options.js",
         "scripts/lang.js",

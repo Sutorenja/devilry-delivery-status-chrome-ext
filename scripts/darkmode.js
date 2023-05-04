@@ -24,7 +24,7 @@ function enableDark() {
 
     // account dashboard (seen at https://devilry.ifi.uio.no/account/):
     Array.from(document.getElementsByClassName("devilry-dashboard-container")).forEach(e => {
-        e.classList.add("extension-bgcolor-black", "extension-darken");
+        e.classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
     });
 
     // devilry extension deadline status:
@@ -36,15 +36,48 @@ function enableDark() {
         if (e.getAttribute("data-deadline-passed") === "true") console.log("AAAAAAAA")*/
     });
 
-    // more edge cases (containers that show up when you click on an assignment):
-    // TODO the two below dont fully work!
+    // more edge cases (all of this is containers that show up specifically when you when you click on an assignment):
     Array.from(document.getElementsByClassName("devilry-group-feedbackfeed-buttonbar")).forEach(e => {
         e.classList.add("extension-bgcolor-black", "extension-darken");
     });
 
     Array.from(document.getElementsByClassName("comment-form-container")).forEach(e => {
-        e.firstElementChild.classList.add("extension-bgcolor-black", "extension-darken");
+        e.classList.add("extension-bgcolor-black", "extension-darken");
     });
+
+    Array.from(document.getElementsByClassName("devilry-comment-editor-textarea")).forEach(e => {
+        e.classList.add("extension-button-darken", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("devilry-fileupload-content")).forEach(e => {
+        e.classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("devilry-fileupload-dropbox")).forEach(e => {
+        e.classList.add("extension-bgcolor-black", "extension-color-white", "extension-border-color-black", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("devilry-fileupload-fileselect-button")).forEach(e => {
+        e.classList.add("extension-button-darken", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("devilry-comment-editor-toolbar")).forEach(e => {
+        e.classList.add("extension-button-darken", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("tablinks")).forEach(e => {
+        e.classList.add("extension-button-darken", "extension-darken");
+    });
+
+    Array.from(document.getElementsByClassName("devilry-comment-editor-toolbar__option")).forEach(e => {
+        e.classList.add("extension-button-darken2", "extension-darken");
+    });
+
+    // document.getElementById("id_text_comment_editor_section").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
+
+    // document.getElementById("submit-id-student_add_comment").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
+
+    document.getElementById("submit-id-student_add_comment").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
 
     darkened = true;
 }
@@ -56,7 +89,10 @@ function disableDark() {
             "extension-color-black",
             "extension-bgcolor-black",
             "extension-color-darkgray",
-            "extension-color-gray"
+            "extension-color-gray",
+            "extension-border-color-black",
+            "extension-button-darken",
+            "extension-button-darken2"
         );
     });
 
