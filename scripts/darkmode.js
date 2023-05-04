@@ -73,11 +73,14 @@ function enableDark() {
         e.classList.add("extension-button-darken2", "extension-darken");
     });
 
+    // need to store element in a temp variable so we can check if its null.
+    // this is neccessary because we use getElementById which returns an element OR null.
+    // getElementsByClassName returns an array no matter what and therefore we don't need to check for null.
+    let temp = document.getElementById("submit-id-student_add_comment");
+    if (temp !== null) temp.classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
+
     // document.getElementById("id_text_comment_editor_section").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
-
     // document.getElementById("submit-id-student_add_comment").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
-
-    document.getElementById("submit-id-student_add_comment").classList.add("extension-bgcolor-black", "extension-color-white", "extension-darken");
 
     darkened = true;
 }
