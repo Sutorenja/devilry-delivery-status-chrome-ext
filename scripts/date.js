@@ -42,8 +42,8 @@ function isNegative(msInterval) {
 
 /*
     As a general rule, there can only be two time units present in a string at once
-    so the string doesn't get too specific/complex and hard to read.
-    Possible strings: "2 months and 3 weeks" or "2 days and 1 hour"
+    so the string doesn't become too long and complicated and then hard to read.
+    Possible strings: "2 months and 3 weeks", "1 hour and 15 seconds", or "2 days and 1 hour"
     Impossible strings: "2 months, 3 weeks, 5 days, and 2 hours" or "2 days, 1 hour, 40 minutes, and 20 seconds"
  */
 function getDateString(msInterval) {
@@ -94,38 +94,32 @@ function getTranslatableDateString(msInterval) {
     let count = 0;
     let interval = msInterval;
 
-    const addToStringTranslatable = (unit, pluralUnit, func) => {
-        let time = func(interval);
-        if (time >= 1) {
-            let floored = Math.floor(time); // getMonths (and other funcs) return floats
-            interval -= getMillis(floored, unit);
-            count++;
+    const units = [
+        {"unit": MONTH, "unit_pl": MONTHS, "func": getMonths},
+        {"unit": WEEK, "unit_pl": WEEKS, "func": getWeeks},
+        {"unit": DAY, "unit_pl": DAYS, "func": getDays},
+        {"unit": HOUR, "unit_pl": HOURS, "func": getHours},
+        {"unit": MINUTE, "unit_pl": MINUTES, "func": getMinutes},
+        {"unit": SECOND, "unit_pl": SECONDS, "func": getSeconds}
+    ];
 
-            string += floored + " ";
-            if (floored > 1) string += getTranslation(pluralUnit);
-            else string += getTranslation(unit)
-            string += " " + getTranslation(AND) + " ";
-        }
-    };
+    // some() will stop as soon as the callback inside of it is true
+    units.some(unit => {
+        let time = unit["func"](interval);
 
-    addToStringTranslatable(MONTH, MONTHS, getMonths);
+        if (time < 1) return false;
 
-    addToStringTranslatable(WEEK, WEEKS, getWeeks);
-    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2); // removes "and " from the end of the string
+        let floored = Math.floor(time); // getMonths (and other funcs) return floats
+        interval -= getMillis(floored, unit["unit"]);
+        count++;
 
-    addToStringTranslatable(DAY, DAYS, getDays);
-    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
+        string += floored + " ";
+        if (floored > 1) string += getTranslation("unit_pl");
+        else string += getTranslation("unit")
+        string += " " + getTranslation(AND) + " ";
 
-    addToStringTranslatable(HOUR, HOURS, getHours);
-    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
-
-    addToStringTranslatable(MINUTE, MINUTES, getMinutes);
-    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
-
-    addToStringTranslatable(SECOND, SECONDS, getSeconds);
-    if (count === 2) return string.substring(0, string.length - getTranslation(AND).length - 2);
-
-    if (count === 1) return string.substring(0, string.length - getTranslation(AND).length - 2);
+        return count === 2; // this stops the loop completely (works as a break statement)
+    });
 
     return string;
 }
