@@ -6,6 +6,26 @@
 - My only goal was to finish this extension as fast as possible, with practically no effort put into readability.
 */
 
+/* TODO future additions:
+    1. If you zoom in, the website starts using a dropdown menu instead.You might want to add extension options to that dropdown menu
+    *
+    2. Try to dynamically change color when enabling dark mode (rn it's pretty much hardcoded)
+    get the opposite color grayscaled color:
+    each color can have 256 values
+    when we talk about grey colors, all 3 colors should be equal (e.g. #000, #ccc etc.)
+    therefore we can just grab the last color (blue).
+    Blue should have a value between 0 and 255 (256 values in total, i.e. 16x16)
+    literally just take that value and subtract 255 to get the opposite color.
+    if blue = 230
+    255 - 230 = 25
+    25 is the opposite of 230
+    *
+    white becomes black
+    lightgray becomes darkgray
+    gray stays gray
+    this is perfect for dark mode. It will be able to transform all kinds of different shades while pertaining all of the different levels of detail.
+* */
+
 const gradedAssignments = [];
 const allAssignments = [];
 const duplicateAssignments = [];

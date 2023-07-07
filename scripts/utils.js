@@ -52,7 +52,6 @@ function translateDate(dateString) {
 
     let date = dateString.trim();
     let splitDate = date.split(",");
-
     let dayAndMonth = splitDate[0].split(" ");
 
     let time = splitDate[2];
